@@ -164,7 +164,7 @@ public class IRBuilder {
             iterStartLabel = s.getNewLabel("_ITER_BEGIN");
             iterEndLabel   = s.getNewLabel("_ITER_END");
             loopResult     = s.getNewTemporaryVariable();
-            s.setHasLoopsFlag(true);
+            s.setHasLoopsFlag();
         }
     }
 
@@ -522,8 +522,9 @@ public class IRBuilder {
     public Operand buildMultipleAsgn19(MultipleAsgn19Node multipleAsgnNode, IRScope s) {
         Operand  values = build(multipleAsgnNode.getValueNode(), s);
         Variable ret = getValueInTemporaryVariable(s, values);
-        addInstr(s, new ToAryInstr(ret, ret)); // FIXME: SSA-violating
-        buildMultipleAsgn19Assignment(multipleAsgnNode, s, null, ret);
+        Variable tmp = s.getNewTemporaryVariable();
+        addInstr(s, new ToAryInstr(tmp, ret));
+        buildMultipleAsgn19Assignment(multipleAsgnNode, s, null, tmp);
         return ret;
     }
 
@@ -621,8 +622,9 @@ public class IRBuilder {
     public void buildVersionSpecificAssignment(Node node, IRScope s, Variable v) {
         switch (node.getNodeType()) {
         case MULTIPLEASGN19NODE: {
-            addInstr(s, new ToAryInstr(v, v)); // FIXME: SSA-violating
-            buildMultipleAsgn19Assignment((MultipleAsgn19Node)node, s, null, v);
+            Variable tmp = s.getNewTemporaryVariable();
+            addInstr(s, new ToAryInstr(tmp, v));
+            buildMultipleAsgn19Assignment((MultipleAsgn19Node)node, s, null, tmp);
             break;
         }
         default:
@@ -929,8 +931,7 @@ public class IRBuilder {
         // Check if we have to handle a break
         if (block == null ||
             !(block instanceof WrappedIRClosure) ||
-            !(((WrappedIRClosure)block).getClosure()).hasBreakInstrs)
-        {
+            !(((WrappedIRClosure)block).getClosure()).flags.contains(IRFlags.HAS_BREAK_INSTRS)) {
             // No protection needed -- add the call and return
             addInstr(s, callInstr);
             return;
@@ -1873,8 +1874,9 @@ public class IRBuilder {
                 Variable v = s.getNewTemporaryVariable();
                 addArgReceiveInstr(s, v, argIndex, post, numPreReqd, numPostRead);
                 if (s instanceof IRMethod) ((IRMethod)s).addArgDesc("rest", "");
-                addInstr(s, new ToAryInstr(v, v)); // FIXME: SSA-violating
-                buildMultipleAsgn19Assignment(childNode, s, v, null);
+                Variable tmp = s.getNewTemporaryVariable();
+                addInstr(s, new ToAryInstr(tmp, v));
+                buildMultipleAsgn19Assignment(childNode, s, tmp, null);
                 break;
             }
             default: throw new NotCompilableException("Can't build assignment node: " + node);
@@ -2040,8 +2042,9 @@ public class IRBuilder {
                     v = s.getNewTemporaryVariable();
                     if (isSplat) addInstr(s, new RestArgMultipleAsgnInstr(v, argsArray, preArgsCount, postArgsCount, index));
                     else addInstr(s, new ReqdArgMultipleAsgnInstr(v, argsArray, preArgsCount, postArgsCount, index));
-                    addInstr(s, new ToAryInstr(v, v)); // FIXME: SSA-violating
-                    argsArray = v;
+                    Variable tmp = s.getNewTemporaryVariable();
+                    addInstr(s, new ToAryInstr(tmp, v));
+                    argsArray = tmp;
                 }
                 // Build
                 buildMultipleAsgn19Assignment(childNode, s, argsArray, null);
@@ -3316,7 +3319,7 @@ public class IRBuilder {
             addInstr(s, new PutGlobalVarInstr("$!", rbi.savedExceptionVariable));
             addInstr(s, new JumpInstr(rbi.entryLabel));
             // Retries effectively create a loop
-            s.setHasLoopsFlag(true);
+            s.setHasLoopsFlag();
         }
         return manager.getNil();
     }
@@ -3327,14 +3330,16 @@ public class IRBuilder {
         // Before we return,
         // - have to go execute all the ensure blocks if there are any.
         //   this code also takes care of resetting "$!"
-        // - if we dont have any ensure blocks, we have to clear "$!"
+        // - if we have a rescue block, reset "$!".
         if (!activeEnsureBlockStack.empty()) {
             Variable ret = s.getNewTemporaryVariable();
             addInstr(s, new CopyInstr(ret, retVal));
             retVal = ret;
             emitEnsureBlocks(s, null);
         } else if (!activeRescueBlockStack.empty()) {
-            addInstr(s, new PutGlobalVarInstr("$!", manager.getNil()));
+            // Restore $! and jump back to the entry of the rescue block
+            RescueBlockInfo rbi = activeRescueBlockStack.peek();
+            addInstr(s, new PutGlobalVarInstr("$!", rbi.savedExceptionVariable));
         }
 
         if (s instanceof IRClosure) {
