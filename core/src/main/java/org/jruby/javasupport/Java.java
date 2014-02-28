@@ -982,7 +982,7 @@ public class Java implements Library {
                     // we'll try as a package
                     return getJavaPackageModule(runtime, fullName);
                 } else {
-                    throw runtime.newNameError("missing class or uppercase package name (`" + fullName + "')", fullName);
+                    throw runtime.newNameError("missing class or uppercase package name (`" + fullName + "'), caused by " + e.getMessage(), fullName);
                 }
             }
 
@@ -1263,7 +1263,7 @@ public class Java implements Library {
             if (NEW_STYLE_EXTENSION &&
                     !(RubyBasicObject.class.isAssignableFrom(proxyImplClass) || clazz.getMethods().containsKey("initialize"))
                     ) {
-                clazz.addMethod("initialize", new JavaMethodZero(clazz, PUBLIC) {
+                clazz.addMethod("initialize", new JavaMethodZero(clazz, PRIVATE) {
                     @Override
                     public IRubyObject call(ThreadContext context, IRubyObject self, RubyModule clazz, String name) {
                         return context.runtime.getNil();
