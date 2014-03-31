@@ -13,7 +13,7 @@ import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.InvalidAssumptionException;
 import com.oracle.truffle.api.nodes.Node;
-import org.jruby.truffle.nodes.InlinableMethodImplementation;
+import org.jruby.truffle.runtime.methods.InlinableMethodImplementation;
 import org.jruby.truffle.nodes.call.InlineHeuristic;
 import org.jruby.truffle.runtime.RubyContext;
 import org.jruby.truffle.runtime.core.RubyProc;

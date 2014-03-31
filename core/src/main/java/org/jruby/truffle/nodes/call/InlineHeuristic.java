@@ -10,7 +10,7 @@
 package org.jruby.truffle.nodes.call;
 
 import com.oracle.truffle.api.nodes.NodeUtil;
-import org.jruby.truffle.nodes.*;
+import org.jruby.truffle.runtime.methods.InlinableMethodImplementation;
 
 public class InlineHeuristic {
 

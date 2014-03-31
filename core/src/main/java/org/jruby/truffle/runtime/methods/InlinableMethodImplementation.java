@@ -7,11 +7,12 @@
  * GNU General Public License version 2
  * GNU Lesser General Public License version 2.1
  */
-package org.jruby.truffle.nodes;
+package org.jruby.truffle.runtime.methods;
 
 import com.oracle.truffle.api.*;
 import com.oracle.truffle.api.frame.*;
 import com.oracle.truffle.api.nodes.*;
+import org.jruby.truffle.nodes.RubyRootNode;
 import org.jruby.truffle.nodes.call.*;
 import org.jruby.truffle.runtime.methods.*;
 

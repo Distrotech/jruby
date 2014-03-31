@@ -14,6 +14,7 @@ import com.oracle.truffle.api.frame.*;
 import org.jruby.truffle.nodes.*;
 import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.*;
+import org.jruby.truffle.runtime.methods.InlinableMethodImplementation;
 
 /**
  * Dispatch to a known method which has been inlined.
