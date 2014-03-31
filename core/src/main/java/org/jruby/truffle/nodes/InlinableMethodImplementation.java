@@ -30,6 +30,7 @@ public class InlinableMethodImplementation extends CallTargetMethodImplementatio
 
     public final boolean alwaysInline;
     public final boolean shouldAppendCallNode;
+    public final CallTarget callTarget;
 
     public InlinableMethodImplementation(CallTarget callTarget, MaterializedFrame declarationFrame, FrameDescriptor frameDescriptor, RubyRootNode pristineRootNode, boolean alwaysInline,
                     boolean shouldAppendCallNode) {
@@ -42,6 +43,7 @@ public class InlinableMethodImplementation extends CallTargetMethodImplementatio
         this.pristineRootNode = pristineRootNode;
         this.alwaysInline = alwaysInline;
         this.shouldAppendCallNode = shouldAppendCallNode;
+        this.callTarget = callTarget;
     }
 
     public FrameDescriptor getFrameDescriptor() {

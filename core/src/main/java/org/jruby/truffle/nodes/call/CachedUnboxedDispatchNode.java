@@ -25,6 +25,7 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
     private final Class expectedClass;
     private final Assumption unmodifiedAssumption;
     private final RubyMethod method;
+    @Child protected CallNode callNode;
 
     @Child protected UnboxedDispatchNode next;
 
@@ -39,6 +40,8 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
         this.unmodifiedAssumption = unmodifiedAssumption;
         this.method = method;
         this.next = next;
+
+        this.callNode = Truffle.getRuntime().createCallNode(method.getImplementation().getCallTarget());
     }
 
     @Override
@@ -56,10 +59,9 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
         } catch (InvalidAssumptionException e) {
             return respecialize("class modified", frame, receiverObject, blockObject, argumentsObjects);
         }
-
         // Call the method
-
-        return method.call(frame.pack(), receiverObject, blockObject, argumentsObjects);
+        RubyArguments args = new RubyArguments(frame.materialize(), receiverObject, blockObject, argumentsObjects);
+        return callNode.call(frame.pack(), args);
     }
 
     @Override

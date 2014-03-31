@@ -27,6 +27,7 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
     private final LookupNode expectedLookupNode;
     private final Assumption unmodifiedAssumption;
     private final RubyMethod method;
+    @Child protected CallNode callNode;
 
     @Child protected BoxedDispatchNode next;
 
@@ -40,6 +41,7 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         unmodifiedAssumption = expectedLookupNode.getUnmodifiedAssumption();
         this.method = method;
         this.next = next;
+        this.callNode = Truffle.getRuntime().createCallNode(method.getImplementation().getCallTarget());
     }
 
     @Override
@@ -59,8 +61,8 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         }
 
         // Call the method
-
-        return method.call(frame.pack(), receiverObject, blockObject, argumentsObjects);
+        RubyArguments args = new RubyArguments(frame.materialize(), receiverObject, blockObject, argumentsObjects);
+        return callNode.call(frame.pack(), args);
     }
 
 }

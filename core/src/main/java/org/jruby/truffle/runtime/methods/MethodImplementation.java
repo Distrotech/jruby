@@ -9,11 +9,13 @@
  */
 package org.jruby.truffle.runtime.methods;
 
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.frame.*;
 import org.jruby.truffle.runtime.core.*;
 
 public interface MethodImplementation {
 
     Object call(PackedFrame caller, Object self, RubyProc block, Object... args);
+    public CallTarget getCallTarget();
 
 }

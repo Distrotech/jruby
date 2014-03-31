@@ -43,4 +43,8 @@ public class CallTargetMethodImplementation implements MethodImplementation {
         return declarationFrame;
     }
 
+    public CallTarget getCallTarget(){
+        return callTarget;
+    }
+
 }
