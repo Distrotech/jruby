@@ -19,10 +19,6 @@ import org.jruby.truffle.runtime.methods.*;
 /**
  * A method implementation that also carries the pristine root node and frame descriptor, from which
  * we can inline.
- * 
- * @see InlinedUnboxedDispatchNode
- * @see InlinedBoxedDispatchNode
- * @see InlineHeuristic
  */
 public class InlinableMethodImplementation extends CallTargetMethodImplementation {
 
@@ -30,11 +26,9 @@ public class InlinableMethodImplementation extends CallTargetMethodImplementatio
     private final RubyRootNode pristineRootNode;
 
     public final boolean alwaysInline;
-    public final boolean shouldAppendCallNode;
     public final CallTarget callTarget;
 
-    public InlinableMethodImplementation(CallTarget callTarget, MaterializedFrame declarationFrame, FrameDescriptor frameDescriptor, RubyRootNode pristineRootNode, boolean alwaysInline,
-                    boolean shouldAppendCallNode) {
+    public InlinableMethodImplementation(CallTarget callTarget, MaterializedFrame declarationFrame, FrameDescriptor frameDescriptor, RubyRootNode pristineRootNode, boolean alwaysInline) {
         super(callTarget, declarationFrame);
 
         assert frameDescriptor != null;
@@ -43,7 +37,6 @@ public class InlinableMethodImplementation extends CallTargetMethodImplementatio
         this.frameDescriptor = frameDescriptor;
         this.pristineRootNode = pristineRootNode;
         this.alwaysInline = alwaysInline;
-        this.shouldAppendCallNode = shouldAppendCallNode;
         this.callTarget = callTarget;
     }
 
@@ -61,10 +54,6 @@ public class InlinableMethodImplementation extends CallTargetMethodImplementatio
 
     public boolean alwaysInline() {
         return alwaysInline;
-    }
-
-    public boolean getShouldAppendCallNode() {
-        return shouldAppendCallNode;
     }
 
 }

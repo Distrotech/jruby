@@ -29,9 +29,10 @@ public class RubyMethod {
     private final boolean undefined;
 
     private final MethodImplementation implementation;
+    private final boolean appendCallNode;
 
     public RubyMethod(SourceSection sourceSection, RubyModule declaringModule, UniqueMethodIdentifier uniqueIdentifier, String name, Visibility visibility, boolean undefined,
-                    MethodImplementation implementation) {
+                    MethodImplementation implementation, boolean appendCallNode) {
         this.sourceSection = sourceSection;
         this.declaringModule = declaringModule;
         this.uniqueIdentifier = uniqueIdentifier;
@@ -39,6 +40,7 @@ public class RubyMethod {
         this.visibility = visibility;
         this.undefined = undefined;
         this.implementation = implementation;
+        this.appendCallNode = appendCallNode;
     }
 
     public Object call(PackedFrame caller, Object self, RubyProc block, Object... args) {
@@ -78,12 +80,16 @@ public class RubyMethod {
         return implementation;
     }
 
+    public boolean shouldAppendCallNode() {
+        return appendCallNode;
+    }
+
     public RubyMethod withNewName(String newName) {
         if (newName.equals(name)) {
             return this;
         }
 
-        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, newName, visibility, undefined, implementation);
+        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, newName, visibility, undefined, implementation, appendCallNode);
     }
 
     public RubyMethod withNewVisibility(Visibility newVisibility) {
@@ -91,7 +97,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, newVisibility, undefined, implementation);
+        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, newVisibility, undefined, implementation, appendCallNode);
     }
 
     public RubyMethod withDeclaringModule(RubyModule newDeclaringModule) {
@@ -99,7 +105,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, newDeclaringModule, uniqueIdentifier, name, visibility, undefined, implementation);
+        return new RubyMethod(sourceSection, newDeclaringModule, uniqueIdentifier, name, visibility, undefined, implementation, appendCallNode);
     }
 
     public RubyMethod undefined() {
@@ -107,7 +113,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, visibility, true, implementation);
+        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, visibility, true, implementation, appendCallNode);
     }
 
     public boolean isVisibleTo(RubyBasicObject caller, RubyBasicObject receiver) {

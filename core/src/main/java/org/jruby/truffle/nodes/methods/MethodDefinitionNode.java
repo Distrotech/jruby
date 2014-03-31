@@ -88,8 +88,8 @@ public class MethodDefinitionNode extends RubyNode {
             }
         }
 
-        final InlinableMethodImplementation methodImplementation = new InlinableMethodImplementation(callTarget, declarationFrame, frameDescriptor, pristineRootNode, false, false);
-        return new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, visibility, false, methodImplementation);
+        final InlinableMethodImplementation methodImplementation = new InlinableMethodImplementation(callTarget, declarationFrame, frameDescriptor, pristineRootNode, false);
+        return new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, visibility, false, methodImplementation, false);
     }
 
     @Override

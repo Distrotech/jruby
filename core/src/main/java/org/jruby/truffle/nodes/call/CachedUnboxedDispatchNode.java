@@ -66,9 +66,7 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
 
         final Object[] modifiedArgumentsObjects;
 
-        CompilerAsserts.compilationConstant(method.getImplementation() instanceof InlinableMethodImplementation && ((InlinableMethodImplementation) method.getImplementation()).getShouldAppendCallNode());
-
-        if (method.getImplementation() instanceof InlinableMethodImplementation && ((InlinableMethodImplementation) method.getImplementation()).getShouldAppendCallNode()) {
+        if (method.shouldAppendCallNode()) {
             modifiedArgumentsObjects = Arrays.copyOf(argumentsObjects, argumentsObjects.length + 1);
             modifiedArgumentsObjects[modifiedArgumentsObjects.length - 1] = this;
         } else {
