@@ -12,10 +12,13 @@ package org.jruby.truffle.nodes.call;
 import com.oracle.truffle.api.*;
 import com.oracle.truffle.api.frame.*;
 import com.oracle.truffle.api.nodes.*;
+import org.jruby.truffle.nodes.InlinableMethodImplementation;
 import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.*;
 import org.jruby.truffle.runtime.lookup.*;
 import org.jruby.truffle.runtime.methods.*;
+
+import java.util.Arrays;
 
 /**
  * A node in the dispatch chain that comes after the boxing point and caches a method on a full
@@ -61,7 +64,19 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         }
 
         // Call the method
-        RubyArguments args = new RubyArguments(frame.materialize(), receiverObject, blockObject, argumentsObjects);
+
+        final Object[] modifiedArgumentsObjects;
+
+        CompilerAsserts.compilationConstant(method.getImplementation() instanceof InlinableMethodImplementation && ((InlinableMethodImplementation) method.getImplementation()).getShouldAppendCallNode());
+
+        if (method.getImplementation() instanceof InlinableMethodImplementation && ((InlinableMethodImplementation) method.getImplementation()).getShouldAppendCallNode()) {
+            modifiedArgumentsObjects = Arrays.copyOf(argumentsObjects, argumentsObjects.length + 1);
+            modifiedArgumentsObjects[modifiedArgumentsObjects.length - 1] = this;
+        } else {
+            modifiedArgumentsObjects = argumentsObjects;
+        }
+
+        RubyArguments args = new RubyArguments(frame.materialize(), receiverObject, blockObject, modifiedArgumentsObjects);
         return callNode.call(frame.pack(), args);
     }
 
