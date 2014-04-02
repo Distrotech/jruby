@@ -13,7 +13,6 @@ import com.oracle.truffle.api.*;
 import com.oracle.truffle.api.frame.*;
 import com.oracle.truffle.api.nodes.*;
 import org.jruby.runtime.Visibility;
-import org.jruby.truffle.nodes.*;
 import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.*;
 import org.jruby.truffle.runtime.methods.*;
@@ -44,7 +43,7 @@ public class BlockDefinitionNode extends MethodDefinitionNode {
 
         final RubyArguments arguments = frame.getArguments(RubyArguments.class);
 
-        final RubyMethod method = new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, Visibility.PUBLIC, false, false, callTarget, declarationFrame, true);
+        final RubyMethod method = new RubyMethod(getSourceSection(), uniqueIdentifier, name, null, Visibility.PUBLIC, false, false, true, callTarget, declarationFrame);
 
         return new RubyProc(context.getCoreLibrary().getProcClass(), RubyProc.Type.PROC, arguments.getSelf(), arguments.getBlock(), method);
     }

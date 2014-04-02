@@ -108,7 +108,7 @@ public abstract class ModuleNodes {
             final SequenceNode block = new SequenceNode(context, sourceSection, checkArity, readInstanceVariable);
 
             final RubyRootNode rootNode = new RubyRootNode(sourceSection, null, name + "(attr_reader)", block);
-            final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name, Visibility.PUBLIC, false, false, Truffle.getRuntime().createCallTarget(rootNode), null, true);
+            final RubyMethod method = new RubyMethod(sourceSection, new UniqueMethodIdentifier(), name, module, Visibility.PUBLIC, false, false, true, Truffle.getRuntime().createCallTarget(rootNode), null);
             module.addMethod(method);
         }
     }
@@ -148,7 +148,7 @@ public abstract class ModuleNodes {
             final SequenceNode block = new SequenceNode(context, sourceSection, checkArity, writeInstanceVariable);
 
             final RubyRootNode rootNode = new RubyRootNode(sourceSection, null, name + "(attr_writer)", block);
-            final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name + "=", Visibility.PUBLIC, false, false, Truffle.getRuntime().createCallTarget(rootNode), null, true);
+            final RubyMethod method = new RubyMethod(sourceSection, new UniqueMethodIdentifier(), name + "=", module, Visibility.PUBLIC, false, false, true, Truffle.getRuntime().createCallTarget(rootNode), null);
 
             module.addMethod(method);
         }
@@ -353,7 +353,7 @@ public abstract class ModuleNodes {
             modifiedCatchReturn.setIsProc(false);
 
             final CallTarget modifiedCallTarget = Truffle.getRuntime().createCallTarget(modifiedRootNode);
-            final RubyMethod modifiedMethod = new RubyMethod(method.getSourceSection(), method.getDeclaringModule(), method.getUniqueIdentifier(), name.toString(), method.getVisibility(), method.isUndefined(), method.shouldAppendCallNode(), modifiedCallTarget, method.getDeclarationFrame(), method.isAlwaysInlined());
+            final RubyMethod modifiedMethod = new RubyMethod(method.getSourceSection(), method.getUniqueIdentifier(), name.toString(), method.getDeclaringModule(), method.getVisibility(), method.isUndefined(), method.shouldAppendCallNode(), method.shouldAlwaysInlined(), modifiedCallTarget, method.getDeclarationFrame());
             module.addMethod(modifiedMethod);
         }
 

@@ -83,7 +83,7 @@ public class MethodDefinitionNode extends RubyNode {
             }
         }
 
-        return new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, visibility, false, false, callTarget, declarationFrame, false);
+        return new RubyMethod(getSourceSection(), uniqueIdentifier, name, null, visibility, false, false, false, callTarget, declarationFrame);
     }
 
     @Override

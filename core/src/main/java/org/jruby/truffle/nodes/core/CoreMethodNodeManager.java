@@ -9,13 +9,10 @@
  */
 package org.jruby.truffle.nodes.core;
 
-import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.SourceSection;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.dsl.GeneratedBy;
 import com.oracle.truffle.api.dsl.NodeFactory;
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.nodes.NodeUtil;
 import org.jruby.runtime.Visibility;
 import org.jruby.truffle.nodes.CoreSourceSection;
 import org.jruby.truffle.runtime.methods.*;
@@ -140,8 +137,8 @@ public abstract class CoreMethodNodeManager {
 
         final RubyRootNode rootNode = makeGenericMethod(context, methodDetails);
 
-        final RubyMethod method = new RubyMethod(rootNode.getSourceSection(), module, uniqueIdentifier, canonicalName, visibility, false,
-                methodDetails.getMethodAnnotation().appendCallNode(), Truffle.getRuntime().createCallTarget(rootNode), null, true);
+        final RubyMethod method = new RubyMethod(rootNode.getSourceSection(), uniqueIdentifier, canonicalName, module, visibility, false,
+                methodDetails.getMethodAnnotation().appendCallNode(), true, Truffle.getRuntime().createCallTarget(rootNode), null);
 
         module.addMethod(method);
 
