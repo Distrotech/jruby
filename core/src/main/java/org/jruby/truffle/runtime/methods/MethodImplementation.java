@@ -17,5 +17,6 @@ public interface MethodImplementation {
 
     Object call(PackedFrame caller, Object self, RubyProc block, Object... args);
     public CallTarget getCallTarget();
+    public MaterializedFrame getDeclarationFrame();
 
 }

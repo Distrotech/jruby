@@ -39,6 +39,7 @@ public class CallTargetMethodImplementation implements MethodImplementation {
         return result;
     }
 
+    @Override
     public MaterializedFrame getDeclarationFrame() {
         return declarationFrame;
     }
