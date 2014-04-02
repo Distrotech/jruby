@@ -28,7 +28,7 @@ public class CachedYieldDispatchNode extends YieldDispatchNode {
         super(context, sourceSection);
         this.block = block;
 
-        callNode = Truffle.getRuntime().createCallNode(block.getMethod().getImplementation().getCallTarget());
+        callNode = Truffle.getRuntime().createCallNode(block.getMethod().getCallTarget());
 
         // Always try to split and inline blocks, they look like inline code so we'll treat them exactly like that
 
@@ -43,7 +43,7 @@ public class CachedYieldDispatchNode extends YieldDispatchNode {
 
     @Override
     public Object dispatch(VirtualFrame frame, RubyProc block, Object[] argumentsObjects) {
-        if (block.getMethod().getImplementation().getCallTarget() != callNode.getCallTarget()) {
+        if (block.getMethod().getCallTarget() != callNode.getCallTarget()) {
             CompilerDirectives.transferToInterpreter();
 
             // TODO(CS): at the moment we just go back to uninit, which may cause loops
@@ -55,7 +55,7 @@ public class CachedYieldDispatchNode extends YieldDispatchNode {
             return dispatch.dispatch(frame, block, argumentsObjects);
         }
 
-        final RubyArguments arguments = new RubyArguments(block.getMethod().getImplementation().getDeclarationFrame(), block.getSelf(), block.getBlock(), argumentsObjects);
+        final RubyArguments arguments = new RubyArguments(block.getMethod().getDeclarationFrame(), block.getSelf(), block.getBlock(), argumentsObjects);
         return callNode.call(frame.pack(), arguments);
     }
 }

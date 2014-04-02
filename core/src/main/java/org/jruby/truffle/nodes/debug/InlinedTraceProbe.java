@@ -32,7 +32,7 @@ public final class InlinedTraceProbe extends RubyProbe {
         super(context, false);
         this.tracingAssumption = tracingAssumption;
         this.proc = proc;
-        callNode = Truffle.getRuntime().createCallNode(proc.getMethod().getImplementation().getCallTarget());
+        callNode = Truffle.getRuntime().createCallNode(proc.getMethod().getCallTarget());
     }
 
     @Override
@@ -70,7 +70,7 @@ public final class InlinedTraceProbe extends RubyProbe {
         context.getTraceManager().setSuspended(true);
 
         try {
-            final RubyArguments arguments = new RubyArguments(proc.getMethod().getImplementation().getDeclarationFrame(), NilPlaceholder.INSTANCE, null, event, file, line, objectId, binding, className);
+            final RubyArguments arguments = new RubyArguments(proc.getMethod().getDeclarationFrame(), NilPlaceholder.INSTANCE, null, event, file, line, objectId, binding, className);
             callNode.call(frame.pack(), arguments);
         } finally {
             context.getTraceManager().setSuspended(false);

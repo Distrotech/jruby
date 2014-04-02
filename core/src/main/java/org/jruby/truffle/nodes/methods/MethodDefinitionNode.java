@@ -83,8 +83,7 @@ public class MethodDefinitionNode extends RubyNode {
             }
         }
 
-        final MethodImplementation methodImplementation = new CallTargetMethodImplementation(callTarget, declarationFrame, false);
-        return new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, visibility, false, methodImplementation, false);
+        return new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, visibility, false, false, callTarget, declarationFrame, false);
     }
 
     @Override

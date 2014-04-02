@@ -43,7 +43,7 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         unmodifiedAssumption = expectedLookupNode.getUnmodifiedAssumption();
         this.method = method;
         this.next = next;
-        this.callNode = Truffle.getRuntime().createCallNode(method.getImplementation().getCallTarget());
+        this.callNode = Truffle.getRuntime().createCallNode(method.getCallTarget());
     }
 
     @Override

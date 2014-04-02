@@ -43,7 +43,7 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
         this.method = method;
         this.next = next;
 
-        this.callNode = Truffle.getRuntime().createCallNode(method.getImplementation().getCallTarget());
+        this.callNode = Truffle.getRuntime().createCallNode(method.getCallTarget());
     }
 
     @Override

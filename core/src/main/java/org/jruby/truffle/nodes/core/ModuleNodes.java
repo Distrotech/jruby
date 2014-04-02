@@ -108,9 +108,7 @@ public abstract class ModuleNodes {
             final SequenceNode block = new SequenceNode(context, sourceSection, checkArity, readInstanceVariable);
 
             final RubyRootNode rootNode = new RubyRootNode(sourceSection, null, name + "(attr_reader)", block);
-            final MethodImplementation methodImplementation = new CallTargetMethodImplementation(Truffle.getRuntime().createCallTarget(rootNode), null, true);
-            final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name, Visibility.PUBLIC, false, methodImplementation, false);
-
+            final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name, Visibility.PUBLIC, false, false, Truffle.getRuntime().createCallTarget(rootNode), null, true);
             module.addMethod(method);
         }
     }
@@ -150,8 +148,7 @@ public abstract class ModuleNodes {
             final SequenceNode block = new SequenceNode(context, sourceSection, checkArity, writeInstanceVariable);
 
             final RubyRootNode rootNode = new RubyRootNode(sourceSection, null, name + "(attr_writer)", block);
-            final MethodImplementation methodImplementation = new CallTargetMethodImplementation(Truffle.getRuntime().createCallTarget(rootNode), null, true);
-            final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name + "=", Visibility.PUBLIC, false, methodImplementation, false);
+            final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name + "=", Visibility.PUBLIC, false, false, Truffle.getRuntime().createCallTarget(rootNode), null, true);
 
             module.addMethod(method);
         }
@@ -342,11 +339,11 @@ public abstract class ModuleNodes {
         private static void defineMethod(RubyModule module, RubySymbol name, RubyProc proc) {
             final RubyMethod method = proc.getMethod();
 
-            if (!(method.getImplementation().getCallTarget() instanceof RootCallTarget)) {
+            if (!(method.getCallTarget() instanceof RootCallTarget)) {
                 throw new UnsupportedOperationException("Can only use define_method with methods where we have the original AST, as we need to clone and modify it");
             }
 
-            final RubyRootNode modifiedRootNode = (RubyRootNode) ((RootCallTarget) method.getImplementation().getCallTarget()).getRootNode();
+            final RubyRootNode modifiedRootNode = (RubyRootNode) ((RootCallTarget) method.getCallTarget()).getRootNode();
             final CatchReturnNode modifiedCatchReturn = NodeUtil.findFirstNodeInstance(modifiedRootNode, CatchReturnNode.class);
 
             if (modifiedCatchReturn == null) {
@@ -356,12 +353,7 @@ public abstract class ModuleNodes {
             modifiedCatchReturn.setIsProc(false);
 
             final CallTarget modifiedCallTarget = Truffle.getRuntime().createCallTarget(modifiedRootNode);
-
-            final MethodImplementation modifiedMethodImplementation = new CallTargetMethodImplementation(
-                    modifiedCallTarget, method.getImplementation().getDeclarationFrame(), ((CallTargetMethodImplementation) method.getImplementation()).isAlwaysInlined());
-
-            final RubyMethod modifiedMethod = new RubyMethod(method.getSourceSection(), method.getDeclaringModule(), method.getUniqueIdentifier(), name.toString(), method.getVisibility(), method.isUndefined(), modifiedMethodImplementation, method.shouldAppendCallNode());
-
+            final RubyMethod modifiedMethod = new RubyMethod(method.getSourceSection(), method.getDeclaringModule(), method.getUniqueIdentifier(), name.toString(), method.getVisibility(), method.isUndefined(), method.shouldAppendCallNode(), modifiedCallTarget, method.getDeclarationFrame(), method.isAlwaysInlined());
             module.addMethod(modifiedMethod);
         }
 

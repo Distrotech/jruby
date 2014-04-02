@@ -29,7 +29,7 @@ public abstract class ActiveLeaveDebugProbe extends RubyProbe {
         super(context, false);
         this.activeAssumption = activeAssumption;
         this.proc = proc;
-        callNode = Truffle.getRuntime().createCallNode(proc.getMethod().getImplementation().getCallTarget());
+        callNode = Truffle.getRuntime().createCallNode(proc.getMethod().getCallTarget());
     }
 
     @Override
@@ -43,7 +43,7 @@ public abstract class ActiveLeaveDebugProbe extends RubyProbe {
             return;
         }
 
-        final RubyArguments arguments = new RubyArguments(proc.getMethod().getImplementation().getDeclarationFrame(), NilPlaceholder.INSTANCE, null, result);
+        final RubyArguments arguments = new RubyArguments(proc.getMethod().getDeclarationFrame(), NilPlaceholder.INSTANCE, null, result);
         callNode.call(frame.pack(), arguments);
     }
 

@@ -28,26 +28,44 @@ public class RubyMethod {
     private final Visibility visibility;
     private final boolean undefined;
 
-    private final MethodImplementation implementation;
     private final boolean appendCallNode;
 
+    private final CallTarget callTarget;
+    private final MaterializedFrame declarationFrame;
+    public final boolean alwaysInline;
+
     public RubyMethod(SourceSection sourceSection, RubyModule declaringModule, UniqueMethodIdentifier uniqueIdentifier, String name, Visibility visibility, boolean undefined,
-                    MethodImplementation implementation, boolean appendCallNode) {
+                    boolean appendCallNode, CallTarget callTarget, MaterializedFrame declarationFrame, boolean alwaysInline) {
         this.sourceSection = sourceSection;
         this.declaringModule = declaringModule;
         this.uniqueIdentifier = uniqueIdentifier;
         this.name = name;
         this.visibility = visibility;
         this.undefined = undefined;
-        this.implementation = implementation;
         this.appendCallNode = appendCallNode;
+        this.callTarget = callTarget;
+        this.declarationFrame = declarationFrame;
+        this.alwaysInline = alwaysInline;
     }
 
     public Object call(PackedFrame caller, Object self, RubyProc block, Object... args) {
         assert RubyContext.shouldObjectBeVisible(self);
         assert RubyContext.shouldObjectsBeVisible(args);
 
-        final Object result = implementation.call(caller, self, block, args);
+        final Object result = callX(caller, self, block, args);
+
+        assert RubyContext.shouldObjectBeVisible(result);
+
+        return result;
+    }
+
+    private Object callX(PackedFrame caller, Object self, RubyProc block, Object... args) {
+        assert RubyContext.shouldObjectBeVisible(self);
+        assert RubyContext.shouldObjectsBeVisible(args);
+
+        RubyArguments arguments = new RubyArguments(declarationFrame, self, block, args);
+
+        final Object result = callTarget.call(caller, arguments);
 
         assert RubyContext.shouldObjectBeVisible(result);
 
@@ -76,10 +94,6 @@ public class RubyMethod {
         return undefined;
     }
 
-    public MethodImplementation getImplementation() {
-        return implementation;
-    }
-
     public boolean shouldAppendCallNode() {
         return appendCallNode;
     }
@@ -89,7 +103,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, newName, visibility, undefined, implementation, appendCallNode);
+        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, newName, visibility, undefined, appendCallNode, callTarget, declarationFrame, alwaysInline);
     }
 
     public RubyMethod withNewVisibility(Visibility newVisibility) {
@@ -97,7 +111,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, newVisibility, undefined, implementation, appendCallNode);
+        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, newVisibility, undefined, appendCallNode, callTarget, declarationFrame, alwaysInline);
     }
 
     public RubyMethod withDeclaringModule(RubyModule newDeclaringModule) {
@@ -105,7 +119,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, newDeclaringModule, uniqueIdentifier, name, visibility, undefined, implementation, appendCallNode);
+        return new RubyMethod(sourceSection, newDeclaringModule, uniqueIdentifier, name, visibility, undefined, appendCallNode, callTarget, declarationFrame, alwaysInline);
     }
 
     public RubyMethod undefined() {
@@ -113,7 +127,7 @@ public class RubyMethod {
             return this;
         }
 
-        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, visibility, true, implementation, appendCallNode);
+        return new RubyMethod(sourceSection, declaringModule, uniqueIdentifier, name, visibility, true, appendCallNode, callTarget, declarationFrame, alwaysInline);
     }
 
     public boolean isVisibleTo(RubyBasicObject caller, RubyBasicObject receiver) {
@@ -185,9 +199,16 @@ public class RubyMethod {
         }
     }
 
-    @Override
-    public String toString() {
-        return implementation.toString();
+    public MaterializedFrame getDeclarationFrame() {
+        return declarationFrame;
+    }
+
+    public CallTarget getCallTarget(){
+        return callTarget;
+    }
+
+    public boolean isAlwaysInlined() {
+        return alwaysInline;
     }
 
 }
