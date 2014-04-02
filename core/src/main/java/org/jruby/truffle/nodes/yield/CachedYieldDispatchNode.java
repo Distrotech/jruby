@@ -30,6 +30,10 @@ public class CachedYieldDispatchNode extends YieldDispatchNode {
 
         callNode = Truffle.getRuntime().createCallNode(block.getMethod().getCallTarget());
 
+        // Splitting requires all nodes to be adopted, so force that now
+
+        adoptChildren();
+
         // Always try to split and inline blocks, they look like inline code so we'll treat them exactly like that
 
         if (callNode.isSplittable()) {
@@ -48,7 +52,7 @@ public class CachedYieldDispatchNode extends YieldDispatchNode {
 
             // TODO(CS): at the moment we just go back to uninit, which may cause loops
 
-            getContext().getRuntime().getWarnings().warn(IRubyWarnings.ID.TRUFFLE, "uninitialized yield - may run in a loop");
+            getContext().getRuntime().getWarnings().warn(IRubyWarnings.ID.TRUFFLE, getSourceSection().getSource().getName(), getSourceSection().getStartLine(), "uninitialized yield - may run in a loop");
 
             final UninitializedYieldDispatchNode dispatch = new UninitializedYieldDispatchNode(getContext(), getSourceSection());
             replace(dispatch);
