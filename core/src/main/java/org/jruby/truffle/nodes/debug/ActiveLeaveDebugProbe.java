@@ -13,25 +13,23 @@ import com.oracle.truffle.api.*;
 import com.oracle.truffle.api.frame.*;
 import com.oracle.truffle.api.nodes.*;
 import com.oracle.truffle.api.utilities.BranchProfile;
-import org.jruby.truffle.nodes.*;
+import com.oracle.truffle.api.nodes.Node.Child;
 import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.*;
-import org.jruby.truffle.runtime.methods.InlinableMethodImplementation;
 
 public abstract class ActiveLeaveDebugProbe extends RubyProbe {
 
     private final Assumption activeAssumption;
-
-    private final InlinableMethodImplementation inlinable;
-    private final RubyRootNode inlinedRoot;
+    private final RubyProc proc;
+    @Child protected CallNode callNode;
 
     private final BranchProfile profile = new BranchProfile();
 
     public ActiveLeaveDebugProbe(RubyContext context, Assumption activeAssumption, RubyProc proc) {
         super(context, false);
         this.activeAssumption = activeAssumption;
-        inlinable = ((InlinableMethodImplementation) proc.getMethod().getImplementation());
-        inlinedRoot = inlinable.getCloneOfPristineRootNode();
+        this.proc = proc;
+        callNode = Truffle.getRuntime().createCallNode(proc.getMethod().getImplementation().getCallTarget());
     }
 
     @Override
@@ -45,9 +43,8 @@ public abstract class ActiveLeaveDebugProbe extends RubyProbe {
             return;
         }
 
-        final RubyArguments arguments = new RubyArguments(inlinable.getDeclarationFrame(), NilPlaceholder.INSTANCE, null, result);
-        final VirtualFrame inlinedFrame = Truffle.getRuntime().createVirtualFrame(frame.pack(), arguments, inlinable.getFrameDescriptor());
-        inlinedRoot.execute(inlinedFrame);
+        final RubyArguments arguments = new RubyArguments(proc.getMethod().getImplementation().getDeclarationFrame(), NilPlaceholder.INSTANCE, null, result);
+        callNode.call(frame.pack(), arguments);
     }
 
     protected abstract InactiveLeaveDebugProbe createInactive();

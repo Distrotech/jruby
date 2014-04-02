@@ -72,11 +72,9 @@ class MethodTranslator extends Translator {
         final CallTarget callTarget = Truffle.getRuntime().createCallTarget(NodeUtil.cloneNode(pristineRootNode));
 
         if (isBlock) {
-            return new BlockDefinitionNode(context, sourceSection, methodName, environment.getUniqueMethodIdentifier(), environment.getFrameDescriptor(), environment.needsDeclarationFrame(),
-                            pristineRootNode, callTarget);
+            return new BlockDefinitionNode(context, sourceSection, methodName, environment.getUniqueMethodIdentifier(), environment.needsDeclarationFrame(), callTarget);
         } else {
-            return new MethodDefinitionNode(context, sourceSection, methodName, environment.getUniqueMethodIdentifier(), environment.getFrameDescriptor(), environment.needsDeclarationFrame(),
-                            pristineRootNode, callTarget, ignoreLocalVisiblity);
+            return new MethodDefinitionNode(context, sourceSection, methodName, environment.getUniqueMethodIdentifier(), environment.needsDeclarationFrame(), callTarget, ignoreLocalVisiblity);
         }
     }
 

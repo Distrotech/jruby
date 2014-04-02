@@ -25,9 +25,9 @@ import org.jruby.truffle.runtime.methods.*;
 @NodeInfo(shortName = "block-def")
 public class BlockDefinitionNode extends MethodDefinitionNode {
 
-    public BlockDefinitionNode(RubyContext context, SourceSection sourceSection, String name, UniqueMethodIdentifier uniqueIdentifier, FrameDescriptor frameDescriptor,
-                    boolean requiresDeclarationFrame, RubyRootNode pristineRootNode, CallTarget callTarget) {
-        super(context, sourceSection, name, uniqueIdentifier, frameDescriptor, requiresDeclarationFrame, pristineRootNode, callTarget, false);
+    public BlockDefinitionNode(RubyContext context, SourceSection sourceSection, String name, UniqueMethodIdentifier uniqueIdentifier,
+                    boolean requiresDeclarationFrame, CallTarget callTarget) {
+        super(context, sourceSection, name, uniqueIdentifier, requiresDeclarationFrame, callTarget, false);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlockDefinitionNode extends MethodDefinitionNode {
 
         final RubyArguments arguments = frame.getArguments(RubyArguments.class);
 
-        final InlinableMethodImplementation methodImplementation = new InlinableMethodImplementation(callTarget, declarationFrame, frameDescriptor, pristineRootNode, true);
+        final MethodImplementation methodImplementation = new CallTargetMethodImplementation(callTarget, declarationFrame, true);
         final RubyMethod method = new RubyMethod(getSourceSection(), null, uniqueIdentifier, name, Visibility.PUBLIC, false, methodImplementation, false);
 
         return new RubyProc(context.getCoreLibrary().getProcClass(), RubyProc.Type.PROC, arguments.getSelf(), arguments.getBlock(), method);

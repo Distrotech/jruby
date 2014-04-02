@@ -18,12 +18,18 @@ public class CallTargetMethodImplementation implements MethodImplementation {
 
     private final CallTarget callTarget;
     private final MaterializedFrame declarationFrame;
+    public final boolean alwaysInline;
 
     public CallTargetMethodImplementation(CallTarget callTarget, MaterializedFrame declarationFrame) {
+        this(callTarget, declarationFrame, false);
+    }
+
+    public CallTargetMethodImplementation(CallTarget callTarget, MaterializedFrame declarationFrame, boolean alwaysInline) {
         assert callTarget != null;
 
         this.callTarget = callTarget;
         this.declarationFrame = declarationFrame;
+        this.alwaysInline = alwaysInline;
     }
 
     public Object call(PackedFrame caller, Object self, RubyProc block, Object... args) {
@@ -46,6 +52,10 @@ public class CallTargetMethodImplementation implements MethodImplementation {
 
     public CallTarget getCallTarget(){
         return callTarget;
+    }
+
+    public boolean isAlwaysInlined() {
+        return alwaysInline;
     }
 
 }

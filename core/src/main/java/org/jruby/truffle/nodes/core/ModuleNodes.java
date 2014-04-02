@@ -16,7 +16,6 @@ import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeUtil;
 import org.jruby.common.IRubyWarnings;
 import org.jruby.runtime.Visibility;
-import org.jruby.truffle.runtime.methods.InlinableMethodImplementation;
 import org.jruby.truffle.nodes.RubyRootNode;
 import org.jruby.truffle.nodes.control.SequenceNode;
 import org.jruby.truffle.nodes.methods.CatchReturnNode;
@@ -108,9 +107,8 @@ public abstract class ModuleNodes {
 
             final SequenceNode block = new SequenceNode(context, sourceSection, checkArity, readInstanceVariable);
 
-            final RubyRootNode pristineRoot = new RubyRootNode(sourceSection, null, name + "(attr_reader)", block);
-            final CallTarget callTarget = Truffle.getRuntime().createCallTarget(NodeUtil.cloneNode(pristineRoot));
-            final InlinableMethodImplementation methodImplementation = new InlinableMethodImplementation(callTarget, null, new FrameDescriptor(), pristineRoot, true);
+            final RubyRootNode rootNode = new RubyRootNode(sourceSection, null, name + "(attr_reader)", block);
+            final MethodImplementation methodImplementation = new CallTargetMethodImplementation(Truffle.getRuntime().createCallTarget(rootNode), null, true);
             final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name, Visibility.PUBLIC, false, methodImplementation, false);
 
             module.addMethod(method);
@@ -151,9 +149,8 @@ public abstract class ModuleNodes {
 
             final SequenceNode block = new SequenceNode(context, sourceSection, checkArity, writeInstanceVariable);
 
-            final RubyRootNode pristineRoot = new RubyRootNode(sourceSection, null, name + "(attr_writer)", block);
-            final CallTarget callTarget = Truffle.getRuntime().createCallTarget(NodeUtil.cloneNode(pristineRoot));
-            final InlinableMethodImplementation methodImplementation = new InlinableMethodImplementation(callTarget, null, new FrameDescriptor(), pristineRoot, true);
+            final RubyRootNode rootNode = new RubyRootNode(sourceSection, null, name + "(attr_writer)", block);
+            final MethodImplementation methodImplementation = new CallTargetMethodImplementation(Truffle.getRuntime().createCallTarget(rootNode), null, true);
             final RubyMethod method = new RubyMethod(sourceSection, module, new UniqueMethodIdentifier(), name + "=", Visibility.PUBLIC, false, methodImplementation, false);
 
             module.addMethod(method);
@@ -345,13 +342,11 @@ public abstract class ModuleNodes {
         private static void defineMethod(RubyModule module, RubySymbol name, RubyProc proc) {
             final RubyMethod method = proc.getMethod();
 
-            if (!(method.getImplementation() instanceof InlinableMethodImplementation)) {
+            if (!(method.getImplementation().getCallTarget() instanceof RootCallTarget)) {
                 throw new UnsupportedOperationException("Can only use define_method with methods where we have the original AST, as we need to clone and modify it");
             }
 
-            final InlinableMethodImplementation methodImplementation = (InlinableMethodImplementation) method.getImplementation();
-
-            final RubyRootNode modifiedRootNode = methodImplementation.getCloneOfPristineRootNode();
+            final RubyRootNode modifiedRootNode = (RubyRootNode) ((RootCallTarget) method.getImplementation().getCallTarget()).getRootNode();
             final CatchReturnNode modifiedCatchReturn = NodeUtil.findFirstNodeInstance(modifiedRootNode, CatchReturnNode.class);
 
             if (modifiedCatchReturn == null) {
@@ -362,9 +357,8 @@ public abstract class ModuleNodes {
 
             final CallTarget modifiedCallTarget = Truffle.getRuntime().createCallTarget(modifiedRootNode);
 
-            final InlinableMethodImplementation modifiedMethodImplementation = new InlinableMethodImplementation(
-                    modifiedCallTarget, methodImplementation.getDeclarationFrame(), methodImplementation.getFrameDescriptor(),
-                    modifiedRootNode, methodImplementation.alwaysInline());
+            final MethodImplementation modifiedMethodImplementation = new CallTargetMethodImplementation(
+                    modifiedCallTarget, method.getImplementation().getDeclarationFrame(), ((CallTargetMethodImplementation) method.getImplementation()).isAlwaysInlined());
 
             final RubyMethod modifiedMethod = new RubyMethod(method.getSourceSection(), method.getDeclaringModule(), method.getUniqueIdentifier(), name.toString(), method.getVisibility(), method.isUndefined(), modifiedMethodImplementation, method.shouldAppendCallNode());
 

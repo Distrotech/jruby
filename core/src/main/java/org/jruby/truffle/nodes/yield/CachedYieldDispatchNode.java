@@ -13,11 +13,8 @@ import com.oracle.truffle.api.*;
 import com.oracle.truffle.api.frame.*;
 import com.oracle.truffle.api.nodes.CallNode;
 import org.jruby.common.IRubyWarnings;
-import org.jruby.truffle.nodes.*;
 import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.*;
-import org.jruby.truffle.runtime.methods.InlinableMethodImplementation;
-import org.jruby.truffle.runtime.methods.RubyMethod;
 
 /**
  * Dispatch to a known method which has been inlined.
