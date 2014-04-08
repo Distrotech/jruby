@@ -46,6 +46,12 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
 
     @Override
     public Object dispatch(VirtualFrame frame, RubyBasicObject receiverObject, RubyProc blockObject, Object[] argumentsObjects) {
+        // inlining optimizations
+
+        if (callNode.isInlined()){
+            callNode.inline();
+            callNode.split();
+        }
         // Check the lookup node is what we expect
 
         if (receiverObject.getLookupNode() != expectedLookupNode) {
