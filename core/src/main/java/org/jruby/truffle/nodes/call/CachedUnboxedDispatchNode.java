@@ -42,27 +42,22 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
         this.unmodifiedAssumption = unmodifiedAssumption;
         this.method = method;
         this.next = next;
-
         this.callNode = Truffle.getRuntime().createCallNode(method.getCallTarget());
 
+        if (method.shouldAlwaysInlined()) {
+            // Splitting requires all nodes to be adopted, so force that now
+            adoptChildren();
 
-        // Splitting requires all nodes to be adopted, so force that now
+            assert callNode.isSplittable();
+            assert callNode.isInlinable();
 
-        adoptChildren();
-        // Always try to split and inline blocks, they look like inline code so we'll treat them exactly like that
-
-        if (callNode.isSplittable()) {
             callNode.split();
-        }
-
-        if (callNode.isInlinable()) {
             callNode.inline();
         }
     }
 
     @Override
     public Object dispatch(VirtualFrame frame, Object receiverObject, RubyProc blockObject, Object[] argumentsObjects) {
-
         // Check the class is what we expect
 
         if (receiverObject.getClass() != expectedClass) {
@@ -76,6 +71,7 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
         } catch (InvalidAssumptionException e) {
             return respecialize("class modified", frame, receiverObject, blockObject, argumentsObjects);
         }
+
         // Call the method
 
         final Object[] modifiedArgumentsObjects;

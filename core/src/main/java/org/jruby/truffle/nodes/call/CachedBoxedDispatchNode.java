@@ -45,17 +45,14 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         this.next = next;
         this.callNode = Truffle.getRuntime().createCallNode(method.getCallTarget());
 
-        // Splitting requires all nodes to be adopted, so force that now
+        if (method.shouldAlwaysInlined()) {
+            // Splitting requires all nodes to be adopted, so force that now
+            adoptChildren();
 
-        adoptChildren();
+            assert callNode.isSplittable();
+            assert callNode.isInlinable();
 
-        // Always try to split and inline blocks, they look like inline code so we'll treat them exactly like that
-
-        if (callNode.isSplittable()) {
             callNode.split();
-        }
-
-        if (callNode.isInlinable()) {
             callNode.inline();
         }
     }
@@ -89,7 +86,6 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         }
 
         RubyArguments args = new RubyArguments(frame.materialize(), receiverObject, blockObject, modifiedArgumentsObjects);
-
         return callNode.call(frame.pack(), args);
     }
 
