@@ -45,6 +45,10 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         this.next = next;
         this.callNode = Truffle.getRuntime().createCallNode(method.getCallTarget());
 
+        // Splitting requires all nodes to be adopted, so force that now
+
+        adoptChildren();
+
         // Always try to split and inline blocks, they look like inline code so we'll treat them exactly like that
 
         if (callNode.isSplittable()) {
