@@ -44,16 +44,21 @@ public class CachedBoxedDispatchNode extends BoxedDispatchNode {
         this.method = method;
         this.next = next;
         this.callNode = Truffle.getRuntime().createCallNode(method.getCallTarget());
+
+        // Always try to split and inline blocks, they look like inline code so we'll treat them exactly like that
+
+        if (callNode.isSplittable()) {
+            callNode.split();
+        }
+
+        if (callNode.isInlinable()) {
+            callNode.inline();
+        }
     }
 
     @Override
     public Object dispatch(VirtualFrame frame, RubyBasicObject receiverObject, RubyProc blockObject, Object[] argumentsObjects) {
-        // inlining optimizations
 
-        if (callNode.isInlined()){
-            callNode.inline();
-            callNode.split();
-        }
         // Check the lookup node is what we expect
 
         if (receiverObject.getLookupNode() != expectedLookupNode) {
