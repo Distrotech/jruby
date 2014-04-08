@@ -54,7 +54,7 @@ public class RubyMethod {
     public Object call(PackedFrame caller, Object self, RubyProc block, Object... args) {
         assert RubyContext.shouldObjectBeVisible(self);
         assert RubyContext.shouldObjectsBeVisible(args);
-        RubyArguments arguments = new RubyArguments(declarationFrame, self, block, args);
+        RubyArguments arguments = new RubyArguments(RubyArguments.create(declarationFrame, self, block, args));
 
         final Object result = callTarget.call(caller, arguments);
 

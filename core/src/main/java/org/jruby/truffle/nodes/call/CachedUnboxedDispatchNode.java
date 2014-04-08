@@ -83,7 +83,7 @@ public class CachedUnboxedDispatchNode extends UnboxedDispatchNode {
             modifiedArgumentsObjects = argumentsObjects;
         }
 
-        RubyArguments args = new RubyArguments(frame.materialize(), receiverObject, blockObject, modifiedArgumentsObjects);
+        RubyArguments args = new RubyArguments(RubyArguments.create(frame.materialize(), receiverObject, blockObject, modifiedArgumentsObjects));
         return callNode.call(frame.pack(), args);
     }
 

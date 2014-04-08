@@ -149,6 +149,7 @@ import java.util.Map;
 import org.jruby.RubyArray;
 import org.jruby.RubyRange;
 
+import static org.jruby.util.CodegenUtils.c;
 import static org.jruby.util.CodegenUtils.ci;
 import static org.jruby.util.CodegenUtils.p;
 import static org.jruby.util.CodegenUtils.sig;
@@ -188,7 +189,7 @@ public class JVMVisitor extends IRVisitor {
 //            e.printStackTrace();
 //        }
 
-        return jrubyClassLoader.defineClass(JVM.scriptToClass(scope.getName()), target.code());
+        return jrubyClassLoader.defineClass(c(JVM.scriptToClass(scope.getName())), target.code());
     }
 
     public byte[] code() {
@@ -240,9 +241,9 @@ public class JVMVisitor extends IRVisitor {
 
         jvm.pushmethod(name, signature);
 
-        // UGLY hack for blocks, which still have their scopes pushed before invocation
-        // Scope management for blocks needs to be figured out
-        if (scope instanceof IRClosure) {
+        // UGLY hack for blocks and scripts, which still have their scopes pushed before invocation
+        // Scope management for blocks and scripts needs to be figured out
+        if (scope instanceof IRClosure || scope instanceof IRScriptBody) {
             jvm.method().loadContext();
             jvm.method().invokeVirtual(Type.getType(ThreadContext.class), Method.getMethod("org.jruby.runtime.DynamicScope getCurrentScope()"));
             jvmStoreLocal(DYNAMIC_SCOPE);

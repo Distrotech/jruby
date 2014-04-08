@@ -59,7 +59,7 @@ public class CachedYieldDispatchNode extends YieldDispatchNode {
             return dispatch.dispatch(frame, block, argumentsObjects);
         }
 
-        final RubyArguments arguments = new RubyArguments(block.getMethod().getDeclarationFrame(), block.getSelf(), block.getBlock(), argumentsObjects);
+        final RubyArguments arguments = new RubyArguments(RubyArguments.create(block.getMethod().getDeclarationFrame(), block.getSelf(), block.getBlock(), argumentsObjects));
         return callNode.call(frame.pack(), arguments);
     }
 }

@@ -13,7 +13,6 @@ import com.oracle.truffle.api.*;
 import com.oracle.truffle.api.frame.*;
 import com.oracle.truffle.api.nodes.*;
 import com.oracle.truffle.api.utilities.BranchProfile;
-import com.oracle.truffle.api.nodes.Node.Child;
 import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.*;
 
@@ -43,7 +42,11 @@ public abstract class ActiveLeaveDebugProbe extends RubyProbe {
             return;
         }
 
-        final RubyArguments arguments = new RubyArguments(proc.getMethod().getDeclarationFrame(), NilPlaceholder.INSTANCE, null, result);
+        Object[] internalArguments = RubyArguments.create(1);
+        RubyArguments.setDeclarationFrame(internalArguments, proc.getMethod().getDeclarationFrame());
+        RubyArguments.setSelf(internalArguments, NilPlaceholder.INSTANCE);
+        RubyArguments.setUserArgument(internalArguments, 0, result);
+        final RubyArguments arguments = new RubyArguments(internalArguments);
         callNode.call(frame.pack(), arguments);
     }
 
