@@ -39,7 +39,7 @@ public class InactiveTraceProbe extends RubyProbe {
                 return;
             }
 
-            final InlinedTraceProbe activeTraceProbe = new InlinedTraceProbe((RubyContext) getContext(), traceProc, context.getTraceManager().getTracingAssumption().getAssumption());
+            final ActiveTraceProbe activeTraceProbe = new ActiveTraceProbe((RubyContext) getContext(), traceProc, context.getTraceManager().getTracingAssumption().getAssumption());
             replace(activeTraceProbe);
             activeTraceProbe.enter(astNode, frame);
         }

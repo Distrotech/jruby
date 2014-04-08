@@ -17,7 +17,7 @@ import org.jruby.truffle.runtime.*;
 import org.jruby.truffle.runtime.core.RubyBinding;
 import org.jruby.truffle.runtime.core.RubyString;
 
-public final class InlinedTraceProbe extends RubyProbe {
+public final class ActiveTraceProbe extends RubyProbe {
 
     private final Assumption tracingAssumption;
     private final RubyProc proc;
@@ -28,7 +28,7 @@ public final class InlinedTraceProbe extends RubyProbe {
     @CompilerDirectives.CompilationFinal private int line;
     @CompilerDirectives.CompilationFinal private RubyString className;
 
-    public InlinedTraceProbe(RubyContext context, RubyProc proc, final Assumption tracingAssumption) {
+    public ActiveTraceProbe(RubyContext context, RubyProc proc, final Assumption tracingAssumption) {
         super(context, false);
         this.tracingAssumption = tracingAssumption;
         this.proc = proc;
