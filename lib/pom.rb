@@ -37,7 +37,6 @@ default_gems =
    ImportedGem.new( 'krypt', 'krypt.version', true ),
    ImportedGem.new( 'krypt-core', 'krypt.version', true ),
    ImportedGem.new( 'krypt-provider-jdk', 'krypt.version', true ),
-   ImportedGem.new( 'bouncy-castle-java', 'bc.version', true )
   ]
 
 project 'JRuby Lib Setup' do
