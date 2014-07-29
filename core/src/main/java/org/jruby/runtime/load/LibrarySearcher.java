@@ -11,11 +11,13 @@ import org.jruby.Ruby;
 import org.jruby.RubyHash;
 import org.jruby.RubyString;
 import org.jruby.ast.executable.Script;
+import org.jruby.embed.ScriptingContainer;
 import org.jruby.runtime.builtin.IRubyObject;
 import org.jruby.runtime.load.LoadService.SuffixType;
 import org.jruby.util.ClasspathResource;
 import org.jruby.util.FileResource;
 import org.jruby.util.JRubyFile;
+import org.jruby.util.URLResource;
 
 class LibrarySearcher {
     static class Ruby18 extends LibrarySearcher {
@@ -251,6 +253,9 @@ class LibrarySearcher {
                     // get URL directly from the classloader with its StreamHandler set
                     // by the classloader itself
                     url = ClasspathResource.getResourceURL(location);
+                }
+                else if (location.startsWith(URLResource.URI)){
+                    url = URLResource.getResourceURL(location);
                 }
                 else {
                     File f = new File(location);
