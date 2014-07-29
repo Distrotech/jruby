@@ -43,7 +43,7 @@ public class URLResource implements FileResource {
     @Override
     public boolean exists()
     {
-        return is != null;
+        return is != null || list != null;
     }
 
     @Override
@@ -136,10 +136,16 @@ public class URLResource implements FileResource {
         URL url;
         try
         {
-            pathname = pathname.replaceAll("([^:])//", "$1/").replaceFirst( ":/", "://" ).replace("///", "//");
+            pathname = pathname
+                    // collapse // to / - some OSGi classloaders do not like //
+                    .replaceAll("([^:])//", "$1/")
+                    // TODO NormalizedFile does too much - should leave uri: files as they are
+                    .replaceFirst( ":/([^/])", "://$1" )
+                    // file protocol file:// does not open stream :(
+                    .replace("file://", "file:/");
             url = new URL(pathname);
             // we do not want to deal with those url here like this though they are valid url/uri
-            if (url.getProtocol().startsWith("http") || url.getProtocol().equals("file")|| url.getProtocol().equals("jar")){
+            if (url.getProtocol().startsWith("http")){
                 return null;
             }   
         }
@@ -149,7 +155,7 @@ public class URLResource implements FileResource {
             return new URLResource(URI + pathname, null, null);
         }
         String[] files = listFiles(pathname);
-        if (files != null) {
+        if (files != null) {            
             return new URLResource(URI + pathname, null, files);
         }
         try
@@ -194,7 +200,7 @@ public class URLResource implements FileResource {
     private static String[] listFiles(String pathname) {
         try
         {
-            return listFilesFromURL(new URL(pathname + "/.jrubydir"));
+            return listFilesFromURL(new URL(pathname.replace("file://", "file:/") + "/.jrubydir"));
         }
         catch (MalformedURLException e)
         {
