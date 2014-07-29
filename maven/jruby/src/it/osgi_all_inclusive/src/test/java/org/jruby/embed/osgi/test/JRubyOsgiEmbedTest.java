@@ -58,64 +58,76 @@ public class JRubyOsgiEmbedTest {
     @Configuration
     public Option[] config() {
         File f = new File("target/osgi_all_inclusive-0.0.0.jar");
-	//f = new File( "/usr/local/repository/org/jruby/jruby-complete/1.7.13/jruby-complete-1.7.13.jar" );
+        //f = new File( "/usr/local/repository/org/jruby/jruby-complete/1.7.13/jruby-complete-1.7.13.jar" );
         return options(bundle(f.toURI().toString()));
     }
 
     @Test
     public void testJRubyCreate() throws InterruptedException {
 
-	System.err.println();
-	System.err.println();
+        System.err.println();
+        System.err.println();
 
-	System.setProperty( "jruby.debug.loadService", "true" );
+	// System.setProperty( "jruby.debug.loadService", "true" );
 
-	ScriptingContainer scriptingContainer = new ScriptingContainer();
-	// tell the scripting container to use the bundle classloader
-	// to use for the parent of the JRuby-classloader, i.e. 
-	// the classloader from where the ScriptingContainer was loaded from
-	scriptingContainer.setClassLoader( ScriptingContainer.class.getClassLoader() );
+        String uri = "uri:" + ScriptingContainer.class.getClassLoader().getResource( "/" ).toString().replaceFirst( "/$", "" );
+        System.err.println(uri);
+	//System.setProperty( "jruby.lib", "/home/christian/projects/active/maven/jruby17/lib" );
 
-	// setup the LOAD_PATH
-	String uri = scriptingContainer.getClassLoader().getResource( "/" ).toString().replaceFirst( "/$", "" );
-	System.err.println(uri);
+        ScriptingContainer scriptingContainer = new ScriptingContainer();
+        // tell the scripting container to use the bundle classloader
+        // to use for the parent of the JRuby-classloader, i.e. 
+        // the classloader from where the ScriptingContainer was loaded from
+        scriptingContainer.setClassLoader( ScriptingContainer.class.getClassLoader() );
+	scriptingContainer.setHomeDirectory( uri + "/META-INF/jruby.home" );
+	System.err.println( scriptingContainer.getHomeDirectory());
+        // setup the LOAD_PATH
+        scriptingContainer.runScriptlet( "$LOAD_PATH.delete_if{|p| p =~ /jar$/ };$LOAD_PATH << '" + uri + "'" );
+        
+        // setup GEM_PATH
+        scriptingContainer.runScriptlet( "Gem::Specification.dirs = ['" + uri + "'];Gem::Specification.dirs << '" + uri + "/META-INF/jruby.home/lib/ruby/gems/shared'" );
 
-	scriptingContainer.runScriptlet( "$LOAD_PATH << '" + uri + "'" );
-	
-	// run a script from LOAD_PATH
-	String hello = (String) scriptingContainer.runScriptlet( "require 'hello'; Hello.say" );
-	assertEquals( hello, "world" );
+        // run a script from LOAD_PATH
+        String hello = (String) scriptingContainer.runScriptlet( "require 'hello'; Hello.say" );
+        assertEquals( hello, "world" );
 
-	// setup GEM_PATH
-	scriptingContainer.runScriptlet( "Gem.paths.path << '" + uri + "'" );
-	// ensure we can load rake from the default gems
-	boolean loaded = (Boolean) scriptingContainer.runScriptlet( "require 'rake'" );
+        System.err.println();
+        System.err.println();
+
+        System.err.println(uri);
+
+        // ensure we can load rake from the default gems
+        boolean loaded = (Boolean) scriptingContainer.runScriptlet( "require 'rake'" );
         assertEquals(true, loaded);
 
-	String list = (String) scriptingContainer.runScriptlet( "Gem.loaded_specs.inspect" );
-	// TODO fix jruby to load default gems in such classloaders, i.e. this
-	// list should contain rake spec
-        assertEquals(list, "{}");
+        String list = (String) scriptingContainer.runScriptlet( "Gem.loaded_specs.keys.inspect" );
+        assertEquals(list, "[\"rake\"]");
 
-	// ensure we can load can load embedded gems
-	// TODO should still work with embedding gems/** and specifictions/*
-	// instead of unwrapping them
-	loaded = (Boolean) scriptingContainer.runScriptlet( "require 'virtus'" );
+        // ensure we can load openssl (with its bouncy-castle jars)
+        loaded = (Boolean) scriptingContainer.runScriptlet( "require 'openssl'" );
         assertEquals(true, loaded);
 
-	// ensure we can load openssl (with its bouncy-castle jars)
-	loaded = (Boolean) scriptingContainer.runScriptlet( "require 'openssl'" );
+        // ensure we can load ffi
+        loaded = (Boolean) scriptingContainer.runScriptlet( "require 'ffi'" );
         assertEquals(true, loaded);
 
-	// ensure we can load ffi
-	//loaded = (Boolean) scriptingContainer.runScriptlet( "require 'ffi'" );
+        String gemPath = (String) scriptingContainer.runScriptlet( "Gem.path.select{ |p| p =~/:\\// }.sort.inspect" );
+        //assertEquals( gemPath, "[\"uri:bundle://13.0:1\", \"uri:bundle://13.0:1/META-INF/jruby.home/lib/ruby/gems/shared\"]" );
+
+        System.err.println();
+        System.err.println();
+
+	list = (String) scriptingContainer.runScriptlet( "Gem.loaded_specs.keys.inspect" );
+        assertEquals(list, "[\"rake\", \"jruby-openssl\", \"jar-dependencies\", \"ffi\", \"krypt-provider-jdk\", \"krypt-core\", \"krypt\"]");
+
+        // ensure we can load can load embedded gems
+        // TODO should still work with embedding gems/** and specifictions/*
+        // instead of unwrapping them
+        loaded = (Boolean) scriptingContainer.runScriptlet( "require 'virtus'" );
         assertEquals(true, loaded);
 
-	String gemPath = (String) scriptingContainer.runScriptlet( "Gem.path.select{ |p| p =~/:\\// }.sort.inspect" );
-	assertEquals( gemPath, "[\"bundle://13.0:1\", \"classpath:/META-INF/jruby.home/lib/ruby/gems/shared\"]" );
-
-	System.err.println();
-	System.err.println();
+	list = (String) scriptingContainer.runScriptlet( "Gem.loaded_specs.keys.inspect" );
+        assertEquals(list, "[\"rake\", \"jruby-openssl\", \"jar-dependencies\", \"ffi\", \"krypt-provider-jdk\", \"krypt-core\", \"krypt\", \"thread_safe\", \"descendants_tracker\", \"equalizer\", \"coercible\", \"ice_nine\", \"axiom-types\", \"virtus\"]");
 
         // OK, this is super ugly. Pax Exam is sometimes unregistering bundles
         // before they've been fully registered with a quick test like this.

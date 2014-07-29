@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class URLResource implements FileResource {
     @Override
     public boolean exists()
     {
-        return true;
+        return is != null;
     }
 
     @Override
@@ -129,7 +128,7 @@ public class URLResource implements FileResource {
     }
 
     public static FileResource create(String pathname)
-    {
+    {        
         if (!pathname.startsWith( URI )) {
             return null;
         }
@@ -144,21 +143,23 @@ public class URLResource implements FileResource {
                 return null;
             }   
         }
-        catch (IOException e)
+        catch (MalformedURLException e)
         {
-            return null;
+            // file does not exists
+            return new URLResource(URI + pathname, null, null);
         }
         String[] files = listFiles(pathname);
         if (files != null) {
             return new URLResource(URI + pathname, null, files);
         }
         try
-        {
+        {   
             return new URLResource(URI + pathname, url.openStream(), null);
         }
         catch (IOException e)
         {
-            return null;
+            // can not open stream - treat it as not existing file
+            return new URLResource(URI + pathname, null, null);
         }
     }
 
