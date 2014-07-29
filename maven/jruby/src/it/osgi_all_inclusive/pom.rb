@@ -10,9 +10,27 @@ properties( 'tesla.dump.pom' => 'pom.xml',
 
 pom 'org.jruby:jruby', '${jruby.version}'
 
-jruby_plugin! :gem, :includeGemsInResources => :compile, :includeRubygemsInTestResources => false
+#jruby_plugin! :gem, :includeGemsInResources => :compile, :includeRubygemsInTestResources => false
 # TODO it should be
-# jruby_plugin! :gem, :includeRubygemsInResources => true, :includeRubygemsInTestResources => false
+jruby_plugin! :gem, :includeRubygemsInResources => true, :includeRubygemsInTestResources => false
+
+require 'fileutils'
+execute 'jrubydir', 'process-resources' do
+  def process( dir, root = false )
+    File.open( dir + '/.jrubydir', 'w' ) do |f|
+      f.puts ".." unless root
+      f.puts "."
+      Dir[ dir + '/*'].entries.each do |e|
+        f.print File.basename( e )
+        if File.directory?( e )
+          process( e )
+        end
+        f.puts
+      end
+    end
+  end
+  process( 'target/rubygems', true )
+end
 
 # add some ruby scripts to bundle
 resource :directory => 'src/main/ruby'
@@ -23,6 +41,7 @@ plugin( 'org.apache.felix:maven-bundle-plugin', '2.4.0',
           'Export-Package' => 'org.jruby.*,org.junit.*',
           # this is needed to find javax.* packages
           'DynamicImport-Package' => '*',
+          'Include-Resource' => '{maven-resources}',
           'Import-Package' => '!org.jruby.*,*;resolution:=optional',
           'Embed-Dependency' => '*;type=jar;scope=compile|runtime;inline=true',
           'Embed-Transitive' => true
