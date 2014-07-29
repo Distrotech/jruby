@@ -110,6 +110,9 @@ public class JRubyFile extends JavaSecuredFile {
         if (pathname == null || pathname.equals("") || Ruby.isSecurityRestricted()) {
             return JRubyNonExistentFile.NOT_EXIST;
         }
+        if(cwd.startsWith("uri:") && !pathname.startsWith("uri:")) {
+            return new JRubyFile(cwd + "/" + pathname);
+        }
         File internal = new JavaSecuredFile(pathname);
         if(!internal.isAbsolute()) {
             internal = new JavaSecuredFile(cwd, pathname);
@@ -134,7 +137,11 @@ public class JRubyFile extends JavaSecuredFile {
 
     @Override
     public String getAbsolutePath() {
-	return normalizeSeps(new File(super.getPath()).getAbsolutePath());
+        if(super.getPath().startsWith("uri:")) {
+            // TODO better do not collapse // to / for uri: files
+            return super.getPath().replaceFirst(":/([^/])", "://$1" );
+        }
+        return normalizeSeps(new File(super.getPath()).getAbsolutePath());
     }
  
     @Override
