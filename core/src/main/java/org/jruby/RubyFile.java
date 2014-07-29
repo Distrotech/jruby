@@ -1592,7 +1592,7 @@ public class RubyFile extends RubyIO implements EncodingCapable {
 
         if (uriParts != null) {
             //If the path was an absolute classpath path, return it as-is.
-            if (uriParts[0].equals("classpath:")) {
+            if (uriParts[0].equals("classpath:") || uriParts[0].equals("uri:")) {
                 return runtime.newString(relativePath);
             }
 
