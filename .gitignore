@@ -79,6 +79,7 @@ install/updates.xml
 
 # generated ITs
 maven/jruby/src/it/osgi_*equinox*
+maven/jruby/src/it/osgi_*felix-3*
 
 # IntelliJ project files
 .idea

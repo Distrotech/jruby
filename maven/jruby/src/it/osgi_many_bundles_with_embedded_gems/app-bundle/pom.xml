@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jruby.osgi</groupId>
+  <artifactId>app-bundle</artifactId>
+  <version>1.0</version>
+  <packaging>bundle</packaging>
+  <name>app-bundle</name>
+  <properties>
+    <jruby.version>@project.version@</jruby.version>
+    <tesla.dump.pom>pom.xml</tesla.dump.pom>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+      <version>${jruby.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jruby.osgi</groupId>
+      <artifactId>gems-bundle</artifactId>
+      <version>1.0</version>
+      <type>bundle</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jruby.osgi</groupId>
+      <artifactId>scripts-bundle</artifactId>
+      <version>1.0</version>
+      <type>bundle</type>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>org.jruby.*,org.junit.*</Export-Package>
+            <DynamicImport-Package>*</DynamicImport-Package>
+            <Include-Resource>{maven-resources}</Include-Resource>
+            <Import-Package>!org.jruby.*,*;resolution:=optional, org.jruby.osgi.gems, org.jruby.osgi.scripts</Import-Package>
+            <Embed-Dependency>*;type=jar;scope=compile|runtime;inline=true</Embed-Dependency>
+            <Embed-Transitive>true</Embed-Transitive>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

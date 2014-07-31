@@ -64,4 +64,11 @@ scope :test do
   profile :id => 'felix-4.4' do
     jar 'org.apache.felix:org.apache.felix.framework:4.4.1'
   end
+  profile :id => 'felix-3.2' do
+    jar 'org.apache.felix:org.apache.felix.framework:3.2.2'
+  end
+end
+
+build do
+  final_name 'osgi-test'
 end

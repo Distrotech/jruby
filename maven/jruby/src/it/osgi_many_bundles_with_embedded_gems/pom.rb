@@ -2,4 +2,4 @@
 
 packaging :pom
 
-modules [ 'gems-bundle', 'app', 'scripts-bundle' ]
+modules [ 'gems-bundle', 'app-bundle', 'scripts-bundle', 'test' ]

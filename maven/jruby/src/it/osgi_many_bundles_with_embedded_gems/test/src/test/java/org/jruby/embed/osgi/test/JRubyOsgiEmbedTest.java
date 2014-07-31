@@ -31,6 +31,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.net.URL;
@@ -59,13 +61,11 @@ public class JRubyOsgiEmbedTest {
 
     @Configuration
     public Option[] config() {
-        File f = new File("target/app-0.0.0.jar");
-        File ff = new File("../gems-bundle/target/gems-bundle-1.0.jar");
-        File fff = new File("../scripts-bundle/target/scripts-bundle-1.0.jar");
-        return options(junitBundles(),
-		       bundle(f.toURI().toString()),
-		       bundle(ff.toURI().toString()),
-		       bundle(fff.toURI().toString()));
+	return options(junitBundles(),
+		       systemProperty("org.ops4j.pax.url.mvn.localRepository").value("../../..//local-repo"),
+		       mavenBundle("org.jruby.osgi", "app-bundle", "1.0"),
+		       mavenBundle("org.jruby.osgi", "gems-bundle", "1.0"),
+		       mavenBundle("org.jruby.osgi", "scripts-bundle", "1.0"));
     }
 
     @Test

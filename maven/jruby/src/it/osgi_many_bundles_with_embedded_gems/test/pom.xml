@@ -3,23 +3,22 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>no_group_id_given</groupId>
-  <artifactId>app</artifactId>
+  <artifactId>test</artifactId>
   <version>0.0.0</version>
   <packaging>bundle</packaging>
-  <name>app</name>
+  <name>test</name>
   <properties>
     <exam.version>3.0.3</exam.version>
     <logback.version>1.0.13</logback.version>
-    <jruby.version>@project.version@</jruby.version>
     <url.version>1.5.2</url.version>
     <tesla.dump.pom>pom.xml</tesla.dump.pom>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.jruby</groupId>
-      <artifactId>jruby</artifactId>
-      <version>${jruby.version}</version>
-      <type>pom</type>
+      <groupId>org.jruby.osgi</groupId>
+      <artifactId>app-bundle</artifactId>
+      <version>1.0</version>
+      <type>bundle</type>
     </dependency>
     <dependency>
       <groupId>org.jruby.osgi</groupId>
@@ -89,22 +88,9 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <version>2.4.0</version>
         <extensions>true</extensions>
-        <executions>
-          <execution>
-            <phase>process-test-resources</phase>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <instructions>
-            <Export-Package>org.jruby.*,org.junit.*</Export-Package>
-            <DynamicImport-Package>*</DynamicImport-Package>
-            <Include-Resource>{maven-resources}</Include-Resource>
-            <Import-Package>!org.jruby.*,*;resolution:=optional, org.jruby.osgi.gems, org.jruby.osgi.scripts</Import-Package>
-            <Embed-Dependency>*;type=jar;scope=compile|runtime;inline=true</Embed-Dependency>
-            <Embed-Transitive>true</Embed-Transitive>
+            <Import-Package>*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -129,6 +115,17 @@
           <groupId>org.eclipse.osgi</groupId>
           <artifactId>org.eclipse.osgi</artifactId>
           <version>3.7.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>felix-3.2</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
+          <version>3.2.2</version>
           <scope>test</scope>
         </dependency>
       </dependencies>

@@ -23,20 +23,10 @@ project 'JRuby Main Maven Artifact' do
                                       'classifier' =>  'javadoc' } ] )
   end
 
-  plugin 'org.apache.felix:maven-bundle-plugin'
-  plugin :jar do
-    execute_goals( 'jar',
-                   :id => 'default-jar',
-                   :phase => 'package',
-                   'archive' => {
-                     'manifestFile' =>  '${project.build.outputDirectory}/META-INF/MANIFEST.MF'
-                   } )
-  end
-
   execute 'setup other osgi frameworks', :phase => 'pre-integration-test' do |ctx|
     require 'fileutils'
     felix = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_all_inclusive_felix_4.4' )
-    [ 'equinox-3.6', 'equinox-3.7' ].each do |m|
+    [ 'equinox-3.6', 'equinox-3.7', 'felix-3.2' ].each do |m|
       target = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_all_inclusive_' + m )
       FileUtils.cp_r( felix, target )
       File.open( File.join( target, 'invoker.properties' ), 'w' ) do |f|

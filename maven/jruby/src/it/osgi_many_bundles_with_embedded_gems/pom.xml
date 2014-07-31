@@ -9,7 +9,8 @@
   <name>osgi_many_bundles_with_embedded_gems</name>
   <modules>
     <module>gems-bundle</module>
-    <module>app</module>
+    <module>app-bundle</module>
     <module>scripts-bundle</module>
+    <module>test</module>
   </modules>
 </project>

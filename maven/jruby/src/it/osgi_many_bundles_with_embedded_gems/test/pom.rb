@@ -5,32 +5,19 @@ packaging 'bundle'
 properties( 'tesla.dump.pom' => 'pom.xml',
             'exam.version' => '3.0.3',
             'url.version' => '1.5.2',
-            'logback.version' => '1.0.13',
-            'jruby.version' => '@project.version@' )
+            'logback.version' => '1.0.13' )
 
-pom 'org.jruby:jruby', '${jruby.version}'
+bundle 'org.jruby.osgi:app-bundle', '1.0'
+bundle 'org.jruby.osgi:gems-bundle', '1.0'
+bundle 'org.jruby.osgi:scripts-bundle', '1.0'
 
 plugin( 'org.apache.felix:maven-bundle-plugin', '2.4.0',
-        #:excludeDependencies => 'bundle',
         :instructions => {
-          # org.junit is needed for the test phase to run unit tests
-          'Export-Package' => 'org.jruby.*,org.junit.*',
-          # this is needed to find javax.* packages
-          'DynamicImport-Package' => '*',
-          'Include-Resource' => '{maven-resources}',
-          'Import-Package' => '!org.jruby.*,*;resolution:=optional, org.jruby.osgi.gems, org.jruby.osgi.scripts',
-          'Embed-Dependency' => '*;type=jar;scope=compile|runtime;inline=true',
-          'Embed-Transitive' => true
+          'Import-Package' => '*',
         } ) do
-  # pack the bundle before the test phase
-  execute_goal :bundle, :phase => 'process-test-resources'
   # TODO fix DSL
   @current.extensions = true
 end
-
-# the tests run inside the bundle so we need it as dependency for the bundle
-bundle 'org.jruby.osgi:gems-bundle', '1.0'
-bundle 'org.jruby.osgi:scripts-bundle', '1.0'
 
 scope :test do
   jar 'junit:junit:4.11'
@@ -49,6 +36,9 @@ scope :test do
   end
   profile :id => 'equinox-3.7' do
     jar 'org.eclipse.osgi:org.eclipse.osgi:3.7.1'
+  end
+  profile :id => 'felix-3.2' do
+    jar 'org.apache.felix:org.apache.felix.framework:3.2.2'
   end
   profile :id => 'felix-4.4' do
     jar 'org.apache.felix:org.apache.felix.framework:4.4.1'
