@@ -68,11 +68,14 @@ public class IsolatedScriptingContainer extends ScriptingContainer {
         runScriptlet( "$LOAD_PATH.delete_if{|p| p =~ /jar$/ }" );
         
         if ( isContextClassLoader ) {
-            runScriptlet( "Gem::Specification.dirs = ['uri:classloader:/','uri:classloader:" + JRUBY_HOME + "/lib/ruby/gems/shared'];"
+            runScriptlet( "Gem::Specification.reset;"
+                        + "Gem::Specification.add_dir 'uri:classloader:" + JRUBY_HOME + "/lib/ruby/gems/shared';"
+                        + "Gem::Specification.add_dir 'uri:classloader:/';"
                         + "$LOAD_PATH << 'uri:classloader:/'; $LOAD_PATH.inspect" );
         }
         else {
-            runScriptlet( "Gem::Specification.dirs = ['" + getHomeDirectory() + "/lib/ruby/gems/shared']" );
+            runScriptlet( "Gem::Specification.reset;"
+                        + "Gem::Specification.add_dir '" + getHomeDirectory() + "/lib/ruby/gems/shared'" );
             addLoadPath( getClassLoader(), JRUBY_HOME_DIR );
             addGemPath( getClassLoader(), JRUBY_HOME_DIR );
         }
@@ -106,8 +109,7 @@ public class IsolatedScriptingContainer extends ScriptingContainer {
         if ( url == null ) {
             throw new RuntimeException( "reference " + ref + " not found on classloader " + cl );
         }
-        runScriptlet( "dirs = Gem::Specification.dirs.collect { |d| d.sub /.specifications$/, '' };"
-                + "Gem::Specification.dirs = ['uri:" + url.toString().replaceFirst( ref + "$", "" ) + "'] + dirs" );
+        runScriptlet( "Gem::Specification.add_dir 'uri:" + url.toString().replaceFirst( ref + "$", "" ) + "'" );
     }
 
 }
