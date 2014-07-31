@@ -13,7 +13,7 @@ gem 'flickraw', '0.9.7'
 repository( :url => 'http://rubygems-proxy.torquebox.org/releases',
             :id => 'rubygems-releases' )
 
-jruby_plugin :gem, :includeRubygemsInTestResources => false, :includeRubygemsInResources => true do
+jruby_plugin :gem, :includeRubygemsInResources => true do
   execute_goal :initialize
 end 
 execute 'jrubydir', 'initialize' do |ctx|

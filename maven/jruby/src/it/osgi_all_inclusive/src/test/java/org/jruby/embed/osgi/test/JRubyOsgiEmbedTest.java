@@ -67,13 +67,8 @@ public class JRubyOsgiEmbedTest {
         System.err.println();
 
 	// System.setProperty( "jruby.debug.loadService", "true" );
-
-        String uri = "uri:" + ScriptingContainer.class.getClassLoader().getResource( "/" ).toString().replaceFirst( "/$", "" );
-        System.err.println(uri);
-	//System.setProperty( "jruby.lib", "/home/christian/projects/active/maven/jruby17/lib" );
-
 	IsolatedScriptingContainer jruby = new IsolatedScriptingContainer();
-        
+
         // run a script from LOAD_PATH
         String hello = (String) jruby.runScriptlet( "require 'hello'; Hello.say" );
         assertEquals( hello, "world" );
