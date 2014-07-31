@@ -38,7 +38,7 @@ import java.net.URL;
 import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.LocalVariableBehavior;
 import org.jruby.embed.ScriptingContainer;
-import org.jruby.embed.osgi.OSGiScriptingContainer;
+import org.jruby.embed.IsolatedScriptingContainer;
 import org.junit.Test;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
