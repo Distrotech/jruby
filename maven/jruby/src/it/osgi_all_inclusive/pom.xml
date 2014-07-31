@@ -8,14 +8,15 @@
   <packaging>bundle</packaging>
   <name>osgi_all_inclusive</name>
   <properties>
-    <exam.version>3.0.3</exam.version>
-    <logback.version>1.0.13</logback.version>
-    <jruby.version>@project.version@</jruby.version>
-    <jruby.plugins.version>1.0.3</jruby.plugins.version>
-    <url.version>1.5.2</url.version>
-    <tesla.dump.pom>pom.xml</tesla.dump.pom>
-    <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     <tesla.version>0.1.1</tesla.version>
+    <jruby.plugins.version>1.0.3</jruby.plugins.version>
+    <jruby.version>@project.version@</jruby.version>
+    <url.version>1.5.2</url.version>
+    <exam.version>3.0.3</exam.version>
+    <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+    <logback.version>1.0.13</logback.version>
+    <tesla.dump.pom>pom.xml</tesla.dump.pom>
+    <jruby.home>../../../../../</jruby.home>
   </properties>
   <dependencies>
     <dependency>
@@ -111,7 +112,6 @@
         </executions>
         <configuration>
           <includeRubygemsInResources>true</includeRubygemsInResources>
-          <includeRubygemsInTestResources>false</includeRubygemsInTestResources>
         </configuration>
       </plugin>
       <plugin>
@@ -145,7 +145,7 @@
         <executions>
           <execution>
             <id>jrubydir</id>
-            <phase>generate-resources</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>execute</goal>
             </goals>

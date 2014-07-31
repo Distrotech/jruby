@@ -10,22 +10,13 @@ jar 'org.osgi:org.osgi.core', '5.0.0', :scope => :provided
 
 jruby_plugin! :gem, :includeRubygemsInResources => true
 
-require 'fileutils'
+# ruby-maven will dump an equivalent pom.xml
+properties( 'tesla.dump.pom' => 'pom.xml',
+            'jruby.home' => '../../../../../' )
+
 execute 'jrubydir', 'process-resources' do |ctx|
-  def process( dir, root = false )
-    File.open( dir + '/.jrubydir', 'w' ) do |f|
-      f.puts ".." unless root
-      f.puts "."
-      Dir[ dir + '/*'].entries.each do |e|
-        f.print File.basename( e )
-        if File.directory?( e )
-          process( e )
-        end
-        f.puts
-      end
-    end
-  end
-  process( ctx.project.build.directory.to_pathname + '/rubygems', true )
+  require 'jruby/commands'
+  JRuby::Commands.generate_dir_info( ctx.project.build.directory.to_pathname + '/rubygems' )
 end
 
 plugin( 'org.apache.felix:maven-bundle-plugin', '2.4.0',

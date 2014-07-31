@@ -10,26 +10,15 @@ properties( 'tesla.dump.pom' => 'pom.xml',
 
 pom 'org.jruby:jruby', '${jruby.version}'
 
-#jruby_plugin! :gem, :includeGemsInResources => :compile, :includeRubygemsInTestResources => false
-# TODO it should be
-jruby_plugin! :gem, :includeRubygemsInResources => true, :includeRubygemsInTestResources => false
+jruby_plugin! :gem, :includeRubygemsInResources => true
 
-require 'fileutils'
-execute 'jrubydir', 'process-resources' do
-  def process( dir, root = false )
-    File.open( dir + '/.jrubydir', 'w' ) do |f|
-      f.puts ".." unless root
-      f.puts "."
-      Dir[ dir + '/*'].entries.each do |e|
-        f.print File.basename( e )
-        if File.directory?( e )
-          process( e )
-        end
-        f.puts
-      end
-    end
-  end
-  process( 'target/rubygems', true )
+# ruby-maven will dump an equivalent pom.xml
+properties( 'tesla.dump.pom' => 'pom.xml',
+            'jruby.home' => '../../../../../' )
+
+execute 'jrubydir', 'process-resources' do |ctx|
+  require 'jruby/commands'
+  JRuby::Commands.generate_dir_info( ctx.project.build.directory.to_pathname + '/rubygems' )
 end
 
 # add some ruby scripts to bundle
