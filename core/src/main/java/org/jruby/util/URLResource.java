@@ -18,6 +18,8 @@ import org.jruby.util.io.ModeFlags;
 public class URLResource implements FileResource {
 
     public static String URI = "uri:";
+    public static String CLASSLOADER = "classloader:/";
+    public static String URI_CLASSLOADER = URI + CLASSLOADER;
 
     private final String uri;
 
@@ -127,12 +129,21 @@ public class URLResource implements FileResource {
         return new ChannelDescriptor(getInputStream(), flags);
     }
 
+    public static FileResource createClassloaderURI(String pathname) {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathname);
+        String[] files = listClassLoaderFiles(pathname);
+        return new URLResource(URI_CLASSLOADER + pathname, is, files);
+    }
+
     public static FileResource create(String pathname)
-    {        
-        if (!pathname.startsWith( URI )) {
+    {
+        if (!pathname.startsWith(URI)) {
             return null;
         }
-        pathname = pathname.substring(URI.length() );
+        pathname = pathname.substring(URI.length());
+        if (pathname.startsWith(CLASSLOADER)) {
+            return createClassloaderURI(pathname.substring(CLASSLOADER.length()));
+        }
         URL url;
         try
         {
@@ -147,7 +158,7 @@ public class URLResource implements FileResource {
             // we do not want to deal with those url here like this though they are valid url/uri
             if (url.getProtocol().startsWith("http")){
                 return null;
-            }   
+            }
         }
         catch (MalformedURLException e)
         {
@@ -169,17 +180,17 @@ public class URLResource implements FileResource {
         }
     }
 
-    public static String[] listFilesFromURL(URL url) {
+    private static String[] listFilesFromInputStream(InputStream is) {
         BufferedReader reader = null;
         try {
             List<String> files = new LinkedList<String>();
-            reader = new BufferedReader( new InputStreamReader( url.openStream() ) );
+            reader = new BufferedReader(new InputStreamReader(is));
             String line = reader.readLine();
             while (line != null) {
-                files.add( line );
+                files.add(line);
                 line = reader.readLine();
             }
-            return files.toArray( new String[ files.size() ] );
+            return files.toArray(new String[files.size()]);
         }
         catch (IOException e) {
             return null;
@@ -196,27 +207,37 @@ public class URLResource implements FileResource {
             }
         }
     }
-    
+    private static String[] listClassLoaderFiles(String pathname) {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathname + "/.jrubydir");
+        if (is == null) {
+            return null;
+        }
+        return listFilesFromInputStream(is);
+    }
+
     private static String[] listFiles(String pathname) {
         try
         {
-            return listFilesFromURL(new URL(pathname.replace("file://", "file:/") + "/.jrubydir"));
+            return listFilesFromInputStream(new URL(pathname.replace("file://", "file:/") + "/.jrubydir").openStream());
         }
-        catch (MalformedURLException e)
+        catch (IOException e)
         {
             return null;
         }
     }
 
-    public static URL getResourceURL( String location )
+    public static URL getResourceURL(String location)
     {
+        if (location.startsWith(URI + CLASSLOADER)){
+            return Thread.currentThread().getContextClassLoader().getResource(location.substring(URI_CLASSLOADER.length()));
+        }
         try
         {
             return new URL( location.replaceFirst("^" + URI, ""));
         }
         catch (MalformedURLException e)
         {
-            throw new RuntimeException("BUG");
+            throw new RuntimeException("BUG in " + URLResource.class);
         }
     }
 }
