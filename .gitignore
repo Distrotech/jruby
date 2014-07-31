@@ -77,6 +77,9 @@ dependency-reduced-pom.xml
 !lib/ruby/gems/shared/gems/rdoc-4.0.1/bin/ri
 install/updates.xml
 
+# generated ITs
+maven/jruby/src/it/osgi_*equinox*
+
 # IntelliJ project files
 .idea
 *.iml
