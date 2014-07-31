@@ -62,7 +62,8 @@ public class JRubyOsgiEmbedTest {
         File f = new File("target/app-0.0.0.jar");
         File ff = new File("../gems-bundle/target/gems-bundle-1.0.jar");
         File fff = new File("../scripts-bundle/target/scripts-bundle-1.0.jar");
-        return options(bundle(f.toURI().toString()),
+        return options(junitBundles(),
+		       bundle(f.toURI().toString()),
 		       bundle(ff.toURI().toString()),
 		       bundle(fff.toURI().toString()));
     }
@@ -101,7 +102,8 @@ public class JRubyOsgiEmbedTest {
         assertEquals(true, loaded);
 
         String gemPath = (String) jruby.runScriptlet( "Gem::Specification.dirs.inspect" );
-        assertEquals( gemPath, "[\"uri:bundle://14.0:1/specifications\", \"uri:bundle://13.0:1/specifications\", \"uri:bundle://13.0:1/META-INF/jruby.home/lib/ruby/gems/shared/specifications\"]" );
+        gemPath = gemPath.replaceAll( "bundle[^:]*://[^/]*", "bundle:/" );
+        assertEquals( gemPath, "[\"uri:bundle://specifications\", \"uri:bundle://specifications\", \"uri:bundle://META-INF/jruby.home/lib/ruby/gems/shared/specifications\"]" );
 
 	list = (String) jruby.runScriptlet( "Gem.loaded_specs.keys.inspect" );
         assertEquals(list, "[\"rake\", \"jruby-openssl\", \"jar-dependencies\", \"ffi\", \"krypt-provider-jdk\", \"krypt-core\", \"krypt\"]");

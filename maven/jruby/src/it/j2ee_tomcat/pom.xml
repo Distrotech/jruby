@@ -3,10 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>no_group_id_given</groupId>
-  <artifactId>j2ee_tomcat_with_isolated_container</artifactId>
+  <artifactId>j2ee_tomcat</artifactId>
   <version>0.0.0</version>
   <packaging>war</packaging>
-  <name>j2ee_tomcat_with_isolated_container</name>
+  <name>j2ee_tomcat</name>
   <properties>
     <jruby.home>../../../../../</jruby.home>
     <jruby.version>@project.version@</jruby.version>

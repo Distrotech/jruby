@@ -29,11 +29,11 @@ plugin( 'org.apache.felix:maven-bundle-plugin', '2.4.0',
 end
 
 # the tests run inside the bundle so we need it as dependency for the bundle
-jar 'junit:junit:4.11'
 bundle 'org.jruby.osgi:gems-bundle', '1.0'
 bundle 'org.jruby.osgi:scripts-bundle', '1.0'
 
 scope :test do
+  jar 'junit:junit:4.11'
   jar 'org.osgi:org.osgi.core:5.0.0'
 
   jar 'org.ops4j.pax.exam:pax-exam-link-mvn', '${exam.version}'
@@ -44,7 +44,13 @@ scope :test do
   jar 'ch.qos.logback:logback-core', '${logback.version}'
   jar 'ch.qos.logback:logback-classic', '${logback.version}'
 
-  #jar 'org.eclipse.osgi:org.eclipse.osgi:3.6.0.v20100517'
-  #jar 'org.eclipse.osgi:org.eclipse.osgi:3.7.1'
-  jar 'org.apache.felix:org.apache.felix.framework:4.4.1'
+  profile :id => 'equinox-3.6' do
+    jar 'org.eclipse.osgi:org.eclipse.osgi:3.6.0.v20100517'
+  end
+  profile :id => 'equinox-3.7' do
+    jar 'org.eclipse.osgi:org.eclipse.osgi:3.7.1'
+  end
+  profile :id => 'felix-4.4' do
+    jar 'org.apache.felix:org.apache.felix.framework:4.4.1'
+  end
 end

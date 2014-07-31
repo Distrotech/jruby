@@ -41,7 +41,6 @@ build do
 end
 
 # download files during the tests
-result = nil
 execute 'download', :phase => 'integration-test' do
   require 'open-uri'
   FileUtils.cp( 'target/wildfly.war', 'target/wildfly-run/wildfly-8.1.0.Final/standalone/deployments' )
@@ -54,11 +53,12 @@ execute 'download', :phase => 'integration-test' do
     count -= 1
     retry if count > 0
   end
-  puts result
+  File.open( 'result', 'w' ) { |f| f.puts result }
 end
 
 # verify the downloads
 execute 'check download', :phase => :verify do
+  result = File.read( 'result' )
   expected = 'hello world:'
   unless result.match( /#{expected}/ )
     raise "missed expected string in download: #{expected}"

@@ -34,15 +34,15 @@ plugin( 'org.codehaus.mojo:tomcat-maven-plugin', '1.1',
 end
 
 # download files during the tests
-result = nil
 execute 'download', :phase => 'integration-test' do
   require 'open-uri'
   result = open( 'http://localhost:8080' ).string
-  puts result
+  File.open( 'result', 'w' ) { |f| f.puts result }
 end
 
 # verify the downloads
 execute 'check download', :phase => :verify do
+  result = File.read( 'result' )
   expected = 'hello world:'
   unless result.match( /#{expected}/ )
     raise "missed expected string in download: #{expected}"
