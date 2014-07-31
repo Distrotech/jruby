@@ -55,7 +55,13 @@ scope :test do
   jar 'ch.qos.logback:logback-core', '${logback.version}'
   jar 'ch.qos.logback:logback-classic', '${logback.version}'
 
-  #jar 'org.eclipse.osgi:org.eclipse.osgi:3.6.0.v20100517'
-  #jar 'org.eclipse.osgi:org.eclipse.osgi:3.7.1'
-  jar 'org.apache.felix:org.apache.felix.framework:4.4.1'
+  profile :id => 'equinox-3.6' do
+    jar 'org.eclipse.osgi:org.eclipse.osgi:3.6.0.v20100517'
+  end
+  profile :id => 'equinox-3.7' do
+    jar 'org.eclipse.osgi:org.eclipse.osgi:3.7.1'
+  end
+  profile :id => 'felix-4.4' do
+    jar 'org.apache.felix:org.apache.felix.framework:4.4.1'
+  end
 end

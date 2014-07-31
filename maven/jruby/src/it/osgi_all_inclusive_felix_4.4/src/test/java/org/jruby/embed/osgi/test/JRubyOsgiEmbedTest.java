@@ -92,9 +92,10 @@ public class JRubyOsgiEmbedTest {
         assertEquals(true, loaded);
 
         String gemPath = (String) jruby.runScriptlet( "Gem::Specification.dirs.inspect" );
-        assertEquals( gemPath, "[\"uri:bundle://13.0:1/specifications\", \"uri:bundle://13.0:1/META-INF/jruby.home/lib/ruby/gems/shared/specifications\"]" );
+        gemPath = gemPath.replaceAll( "bundle[^:]*://[^/]*", "bundle:/" );
+        assertEquals( gemPath, "[\"uri:bundle://specifications\", \"uri:bundle://META-INF/jruby.home/lib/ruby/gems/shared/specifications\"]" );
 
-	list = (String) jruby.runScriptlet( "Gem.loaded_specs.keys.inspect" );
+        list = (String) jruby.runScriptlet( "Gem.loaded_specs.keys.inspect" );
         assertEquals(list, "[\"rake\", \"jruby-openssl\", \"jar-dependencies\", \"ffi\", \"krypt-provider-jdk\", \"krypt-core\", \"krypt\"]");
 
         // ensure we can load can load embedded gems
