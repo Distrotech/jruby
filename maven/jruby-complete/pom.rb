@@ -54,7 +54,11 @@ project 'JRuby Complete' do
   execute 'setup other osgi frameworks', :phase => 'pre-integration-test' do |ctx|
     require 'fileutils'
     felix = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_many_bundles_with_embedded_gems' )
-    [ 'equinox-3.6', 'equinox-3.7', 'felix-3.2' ].each do |m|
+    list = [ 'equinox-3.6', 'equinox-3.7' ]
+    unless java.lang.System.get_property( 'java.specification.version' ) == '1.8'
+       list += [ 'felix-3.2' ]
+    end
+    list.each do |m|
       target = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_many_bundles_with_embedded_gems_' + m )
       FileUtils.cp_r( felix, target )
       File.open( File.join( target, 'invoker.properties' ), 'w' ) do |f|
