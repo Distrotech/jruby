@@ -89,7 +89,7 @@ public class JRubyUtilLibrary implements Library {
             Enumeration<URL> urls = runtime.getJRubyClassLoader().getResources(resource);
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                String urlString = url.getProtocol().equals("jar") ? getPath(url) : "uri:" + url.toExternalForm();
+                String urlString = getPath(url);
                 urlStrings.add(runtime.newString(urlString));
             }
             return RubyArray.newArrayNoCopy(runtime, urlStrings.toArray(new IRubyObject[urlStrings.size()]));
