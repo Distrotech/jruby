@@ -5,7 +5,8 @@ project 'JRuby Main Maven Artifact' do
   inherit 'org.jruby:jruby-artifacts:1.7.14.dev-SNAPSHOT'
   packaging 'jar'
 
-  properties( 'jruby.basedir' => '${basedir}/../../',
+  properties( 'tesla.dump.pom' => 'pom.xml',
+              'jruby.basedir' => '${basedir}/../../',
               'main.basedir' => '${project.parent.parent.basedir}' )
 
   jar 'org.jruby:jruby-core:${project.version}'

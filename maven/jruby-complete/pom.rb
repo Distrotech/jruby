@@ -8,7 +8,8 @@ project 'JRuby Complete' do
   plugin_repository( :id => 'rubygems-releases',
                      :url => 'http://rubygems-proxy.torquebox.org/releases' )
 
-  properties( 'jruby.basedir' => '${basedir}/../../',
+  properties( 'tesla.dump.pom' => 'pom.xml',
+              'jruby.basedir' => '${basedir}/../../',
               'main.basedir' => '${project.parent.parent.basedir}',
               'jruby.complete.home' => '${project.build.outputDirectory}/META-INF/jruby.home' )
 
