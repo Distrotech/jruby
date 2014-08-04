@@ -27,11 +27,7 @@ project 'JRuby Main Maven Artifact' do
   execute 'setup other osgi frameworks', :phase => 'pre-integration-test' do |ctx|
     require 'fileutils'
     felix = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_all_inclusive' )
-    list = [ 'equinox-3.6', 'equinox-3.7' ]
-    unless java.lang.System.get_property( 'java.specification.version' ) == '1.8'
-       list += [ 'felix-3.2' ]
-    end
-    list.each do |m|
+     [ 'equinox-3.6', 'equinox-3.7', 'felix-3.2'].each do |m|
       target = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_all_inclusive_' + m )
       FileUtils.cp_r( felix, target )
       File.open( File.join( target, 'invoker.properties' ), 'w' ) do |f|
@@ -52,4 +48,16 @@ project 'JRuby Main Maven Artifact' do
                    'localRepositoryPath' =>  '${project.build.directory}/local-repo' )
   end
 
+  profile :id => :jdk8 do
+    activation do
+      jdk '1.8'
+    end
+    plugin :invoker, :pomExcludes => ['felix-3.2/pom.xml']
+  end
+  profile :id => :jdk6 do
+    activation do
+      jdk '1.6'
+    end
+    plugin :invoker, :pomExcludes => ['jetty/pom.xml','j2ee_jetty/pom.xml','j2ee_wildfly/pom.xml']
+  end
 end

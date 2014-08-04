@@ -66,6 +66,11 @@ scope :test do
   profile :id => 'felix-3.2' do
     jar 'org.apache.felix:org.apache.felix.framework:3.2.2'
   end
+  profile :id => 'knoplerfish' do
+    repository( :id => :knoplerfish, 
+                :url => 'http://www.knopflerfish.org/maven2' )
+    jar 'org.knopflerfish:framework:5.1.6'
+  end
 end
 
 build do
