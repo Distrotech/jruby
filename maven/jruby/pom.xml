@@ -124,7 +124,7 @@
             <artifactId>maven-invoker-plugin</artifactId>
             <configuration>
               <pomExcludes>
-                <pomExclude>felix-3.2/pom.xml</pomExclude>
+                <pomExclude>osgi_all_inclusive_felix-3.2/pom.xml</pomExclude>
               </pomExcludes>
             </configuration>
           </plugin>
