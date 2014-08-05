@@ -6,8 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import jnr.posix.FileStat;
 import jnr.posix.POSIX;
@@ -130,6 +133,9 @@ public class URLResource implements FileResource {
     }
 
     public static FileResource createClassloaderURI(String pathname) {
+        if (pathname.startsWith("/")) {
+            pathname = pathname.substring(1);
+        }
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathname);
         String[] files = listClassLoaderFiles(pathname);
         return new URLResource(URI_CLASSLOADER + pathname, is, files);
@@ -144,6 +150,10 @@ public class URLResource implements FileResource {
         if (pathname.startsWith(CLASSLOADER)) {
             return createClassloaderURI(pathname.substring(CLASSLOADER.length()));
         }
+        return createRegularURI(pathname);
+    }
+    
+    private static FileResource createRegularURI(String pathname) {
         URL url;
         try
         {
@@ -208,11 +218,27 @@ public class URLResource implements FileResource {
         }
     }
     private static String[] listClassLoaderFiles(String pathname) {
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathname + "/.jrubydir");
-        if (is == null) {
+        try
+        {
+            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(pathname + "/.jrubydir");
+            if (!urls.hasMoreElements()) {
+                return null;
+            }
+            Set<String> result = new LinkedHashSet<String>();
+            while( urls.hasMoreElements() ) {
+                URL url = urls.nextElement();
+                for( String entry: listFilesFromInputStream(url.openStream())) {
+                    if (!result.contains(entry)) {
+                        result.add(entry);
+                    }
+                }
+            }
+            return result.toArray(new String[result.size()]);
+        }
+        catch (IOException e)
+        {
             return null;
         }
-        return listFilesFromInputStream(is);
     }
 
     private static String[] listFiles(String pathname) {
