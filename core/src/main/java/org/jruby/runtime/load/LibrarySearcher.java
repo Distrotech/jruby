@@ -11,7 +11,6 @@ import org.jruby.Ruby;
 import org.jruby.RubyHash;
 import org.jruby.RubyString;
 import org.jruby.ast.executable.Script;
-import org.jruby.embed.ScriptingContainer;
 import org.jruby.runtime.builtin.IRubyObject;
 import org.jruby.runtime.load.LoadService.SuffixType;
 import org.jruby.util.ClasspathResource;
@@ -255,7 +254,8 @@ class LibrarySearcher {
                     url = ClasspathResource.getResourceURL(location);
                 }
                 else if (location.startsWith(URLResource.URI)){
-                    url = URLResource.getResourceURL(location);
+                    url = null;
+                    runtime.getJRubyClassLoader().addURLNoIndex(URLResource.getResourceURL(location));
                 }
                 else {
                     File f = new File(location);
@@ -269,7 +269,9 @@ class LibrarySearcher {
                         url = new URL(location);
                     }
                 }
-                runtime.getJRubyClassLoader().addURL(url);
+                if ( url != null ) {
+                    runtime.getJRubyClassLoader().addURL(url);
+                }
             } catch (MalformedURLException badUrl) {
                 runtime.newIOErrorFromException(badUrl);
             }
