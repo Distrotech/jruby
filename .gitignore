@@ -81,6 +81,7 @@ install/updates.xml
 maven/jruby/src/it/osgi_*equinox*
 maven/jruby/src/it/osgi_*felix-3*
 maven/jruby/src/it/osgi_*knoplerfish
+maven/jruby/src/it/j2ee_wlp
 maven/jruby-complete/src/it/osgi_many_bundles_with_embedded_gems_*
 
 # IntelliJ project files

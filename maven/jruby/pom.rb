@@ -1,3 +1,4 @@
+require 'fileutils'
 project 'JRuby Main Maven Artifact' do
 
   model_version '4.0.0'
@@ -25,7 +26,6 @@ project 'JRuby Main Maven Artifact' do
   end
 
   execute 'setup other osgi frameworks', :phase => 'pre-integration-test' do |ctx|
-    require 'fileutils'
     felix = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_all_inclusive' )
      [ 'equinox-3.6', 'equinox-3.7', 'felix-3.2'].each do |m|
       target = File.join( ctx.basedir.to_pathname, 'src', 'it', 'osgi_all_inclusive_' + m )
@@ -59,5 +59,17 @@ project 'JRuby Main Maven Artifact' do
       jdk '1.6'
     end
     plugin :invoker, :pomExcludes => ['jetty/pom.xml','j2ee_jetty/pom.xml','j2ee_wildfly/pom.xml']
+  end
+
+  profile :id => :wlp do
+    activation do
+      property :name => 'wlp.jar'
+    end
+    execute :install_wlp, :phase => :'pre-integration-test' do |ctx|
+      wlp = ctx.project.properties[ 'wlp.jar' ] || java.lang.System.properties[ 'wlp.jar' ]
+      system( 'java -jar ' + wlp.to_pathname + ' --acceptLicense ' + ctx.project.build.directory.to_pathname )
+      system 'target/wlp/bin/server create testing'
+      FileUtils.cp_r( 'src/templates/j2ee_wlp', 'src/it' )
+    end
   end
 end
