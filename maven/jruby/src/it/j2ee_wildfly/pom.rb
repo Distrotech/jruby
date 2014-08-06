@@ -43,28 +43,34 @@ end
 # download files during the tests
 execute 'download', :phase => 'integration-test' do
   require 'open-uri'
-  FileUtils.cp( 'target/wildfly.war', 'target/wildfly-run/wildfly-8.1.0.Final/standalone/deployments' )
+  FileUtils.cp( 'target/j2ee_wildfly.war', 'target/wildfly-run/wildfly-8.1.0.Final/standalone/deployments/packed.war' )
+  FileUtils.cp_r( 'target/j2ee_wildfly', 'target/wildfly-run/wildfly-8.1.0.Final/standalone/deployments/unpacked.war' )
+  FileUtils.touch( 'target/wildfly-run/wildfly-8.1.0.Final/standalone/deployments/unpacked.war.dodeploy' )
   count = 10
   begin
     sleep 1
-    result = open( 'http://localhost:8080/wildfly/index.jsp' ).string
+    result = open( 'http://localhost:8080/packed/index.jsp' ).string
     count = 0
   rescue
     count -= 1
     retry if count > 0
   end
-  File.open( 'result', 'w' ) { |f| f.puts result }
+  File.open( 'result1', 'w' ) { |f| f.puts result }
+  result = open( 'http://localhost:8080/unpacked/index.jsp' ).string
+  File.open( 'result2', 'w' ) { |f| f.puts result }
 end
 
 # verify the downloads
 execute 'check download', :phase => :verify do
-  result = File.read( 'result' )
-  expected = 'hello world:'
-  unless result.match( /#{expected}/ )
-    raise "missed expected string in download: #{expected}"
-  end
-  expected = 'uri:classloader:/gems/backports-'
-  unless result.match( /#{expected}/ )
-    raise "missed expected string in download: #{expected}"
+  [ 'result1', 'result2' ].each do |r|
+    result = File.read( r )
+    expected = 'hello world:'
+    unless result.match( /#{expected}/ )
+      raise "missed expected string in download: #{expected}"
+    end
+    expected = 'uri:classloader:/gems/backports-'
+    unless result.match( /#{expected}/ )
+      raise "missed expected string in download: #{expected}"
+    end
   end
 end

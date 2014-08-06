@@ -3,13 +3,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>no_group_id_given</groupId>
-  <artifactId>wildfly</artifactId>
+  <artifactId>j2ee_wildfly</artifactId>
   <version>0.0.0</version>
   <packaging>war</packaging>
-  <name>wildfly</name>
+  <name>j2ee_wildfly</name>
   <properties>
     <jruby.home>../../../../../</jruby.home>
-    <jruby.version>1.7.14.dev-SNAPSHOT</jruby.version>
+    <jruby.version>@project.version@</jruby.version>
     <jruby.plugins.version>1.0.3</jruby.plugins.version>
     <tesla.dump.pom>pom.xml</tesla.dump.pom>
     <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
