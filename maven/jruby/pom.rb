@@ -68,8 +68,9 @@ project 'JRuby Main Maven Artifact' do
     execute :install_wlp, :phase => :'pre-integration-test' do |ctx|
       wlp = ctx.project.properties[ 'wlp.jar' ] || java.lang.System.properties[ 'wlp.jar' ]
       system( 'java -jar ' + wlp.to_pathname + ' --acceptLicense ' + ctx.project.build.directory.to_pathname )
-      system 'target/wlp/bin/server create testing'
-      FileUtils.cp_r( 'src/templates/j2ee_wlp', 'src/it' )
+      system( File.join( ctx.project.build.directory.to_pathname,
+                         'wlp/bin/server' ) + 'create testing' )
+      FileUtils.cp_r( File.join( ctx.basedir.to_pathname, 'src/templates/j2ee_wlp'), File.join( ctx.basedir.to_pathname, 'src/it' ) )
     end
   end
 end
