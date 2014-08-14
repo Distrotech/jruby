@@ -10,17 +10,15 @@
   <artifactId>jruby-stdlib</artifactId>
   <name>JRuby Stdlib</name>
   <properties>
-    <jruby.basedir>${basedir}/../../</jruby.basedir>
-    <bundle.name>JRuby Stdlib</bundle.name>
-    <bundle.symbolic_name>org.jruby.jruby-stdlib</bundle.symbolic_name>
     <jruby.complete.gems>${jruby.complete.home}/lib/ruby/gems/shared</jruby.complete.gems>
-    <gem.home>${jruby.basedir}/lib/ruby/gems/shared</gem.home>
+    <tesla.version>0.1.1</tesla.version>
+    <bundle.symbolic_name>org.jruby.jruby-stdlib</bundle.symbolic_name>
+    <gem.home>${jruby.home}/lib/ruby/gems/shared</gem.home>
     <main.basedir>${project.parent.parent.basedir}</main.basedir>
-<<<<<<< HEAD
-=======
-    <tesla.dump.pom>pom-generated.xml</tesla.dump.pom>
     <jruby.complete.home>${project.build.outputDirectory}/META-INF/jruby.home</jruby.complete.home>
->>>>>>> jruby-1_7
+    <bundle.name>JRuby Stdlib</bundle.name>
+    <tesla.dump.pom>pom-generated.xml</tesla.dump.pom>
+    <jruby.home>${basedir}/../../</jruby.home>
   </properties>
   <build>
     <resources>
@@ -35,7 +33,7 @@
       </resource>
       <resource>
         <targetPath>${jruby.complete.home}</targetPath>
-        <directory>${jruby.basedir}</directory>
+        <directory>${jruby.home}</directory>
         <includes>
           <include>bin/ast*</include>
           <include>bin/gem*</include>
@@ -74,31 +72,6 @@
         <version>${jruby.plugins.version}</version>
         <executions>
           <execution>
-            <id>create .jrubydir files</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-	      <script>
-                def process( dir, root = false )
-                  File.open( dir + '/.jrubydir', 'w' ) do |f|
-                    f.puts ".." unless root
-	            f.puts "."
-		    Dir[ dir + '/*'].entries.each do |e|
-                      f.print File.basename( e )
-		      if File.directory?( e )
-		        process( e )
-		      end
-		      f.puts
-                    end
-		  end
-		end
-		process( 'target/classes/META-INF/jruby.home', true )
-	      </script>
-	    </configuration>
-	  </execution>
-          <execution>
             <id>fix shebang on gem bin files and add *.bat files</id>
             <phase>initialize</phase>
             <goals>
@@ -114,7 +87,7 @@
 		end
 	
 		puts 'generate the missing bat files'
-		Dir[File.join( '${jruby.basedir}', 'bin', '*' )].each do |fn|
+		Dir[File.join( '${jruby.home}', 'bin', '*' )].each do |fn|
                   next unless File.file?(fn)
 		  next if fn =~ /.bat$/
 		  next if File.exist?("#{fn}.bat")
@@ -169,30 +142,31 @@
           </execution>
         </executions>
       </plugin>
-<<<<<<< HEAD
-=======
       <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
+        <groupId>io.tesla.polyglot</groupId>
+        <artifactId>tesla-polyglot-maven-plugin</artifactId>
+        <version>${tesla.version}</version>
         <executions>
           <execution>
-            <id>default-jar</id>
-            <phase>package</phase>
+            <id>jrubydir</id>
+            <phase>prepare-package</phase>
             <goals>
-              <goal>jar</goal>
+              <goal>execute</goal>
             </goals>
             <configuration>
-              <archive>
-                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-              </archive>
+              <taskId>jrubydir</taskId>
+              <nativePom>pom.rb</nativePom>
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>io.tesla.polyglot</groupId>
+            <artifactId>tesla-polyglot-ruby</artifactId>
+            <version>${tesla.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
->>>>>>> jruby-1_7
     </plugins>
   </build>
 </project>

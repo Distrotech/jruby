@@ -16,16 +16,13 @@ public class ClasspathResource implements FileResource {
 
     private final String uri;
 
-    private final InputStream is;
-    
-    private final String[] list;
+    private String[] list = null;
     
     private final JarFileStat fileStat;
 
     ClasspathResource(String uri, InputStream is, String[] files)
     {
         this.uri = uri;
-        this.is = is;
         this.fileStat = new JarFileStat(this);
         this.list = files;
     }
@@ -53,6 +50,7 @@ public class ClasspathResource implements FileResource {
         if (url != null) {
             try
             {
+                // TODO open stream on demand
                 return new ClasspathResource(pathname, url.openStream(), null);
             }
             catch (IOException e)
@@ -144,9 +142,13 @@ public class ClasspathResource implements FileResource {
     }
 
     @Override
-    public InputStream getInputStream()
+    public InputStream openInputStream()
     {
-        return is;
+        try {
+            return getResourceURL(uri).openStream();
+        } catch (IOException ioE) {
+            return null;
+        }
     }
 
     @Override

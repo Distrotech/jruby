@@ -8,19 +8,12 @@
     <version>1.7.14.dev-SNAPSHOT</version>
   </parent>
   <artifactId>jruby-complete</artifactId>
-<<<<<<< HEAD
   <packaging>bundle</packaging>
-=======
->>>>>>> jruby-1_7
   <name>JRuby Complete</name>
   <properties>
     <jruby.basedir>${basedir}/../../</jruby.basedir>
     <main.basedir>${project.parent.parent.basedir}</main.basedir>
-<<<<<<< HEAD
-    <tesla.dump.pom>pom.xml</tesla.dump.pom>
-=======
     <tesla.dump.pom>pom-generated.xml</tesla.dump.pom>
->>>>>>> jruby-1_7
     <jruby.complete.home>${project.build.outputDirectory}/META-INF/jruby.home</jruby.complete.home>
     <tesla.version>0.1.1</tesla.version>
   </properties>
@@ -64,7 +57,6 @@
     </resources>
     <plugins>
       <plugin>
-<<<<<<< HEAD
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
@@ -89,10 +81,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
-=======
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.1</version>
->>>>>>> jruby-1_7
         <executions>
           <execution>
             <id>integration-test</id>
@@ -106,7 +94,6 @@
             </configuration>
           </execution>
         </executions>
-<<<<<<< HEAD
         <configuration>
           <projectsDirectory>src/it</projectsDirectory>
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
@@ -121,73 +108,6 @@
         <groupId>io.tesla.polyglot</groupId>
         <artifactId>tesla-polyglot-maven-plugin</artifactId>
         <version>${tesla.version}</version>
-=======
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unzip jruby-core.jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <workingDirectory>${basedir}/../..</workingDirectory>
-              <arguments>
-                <argument>-d</argument>
-                <argument>${project.build.outputDirectory}</argument>
-                <argument>-o</argument>
-                <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
-              </arguments>
-              <executable>unzip</executable>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.jruby.Main</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>update manifest</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-              </archive>
-              <excludes>
-                <exclue>Dummy.class</exclue>
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-invoker-plugin</artifactId>
->>>>>>> jruby-1_7
         <executions>
           <execution>
             <id>setup other osgi frameworks</id>
@@ -201,7 +121,6 @@
             </configuration>
           </execution>
         </executions>
-<<<<<<< HEAD
         <dependencies>
           <dependency>
             <groupId>io.tesla.polyglot</groupId>
@@ -209,14 +128,6 @@
             <version>${tesla.version}</version>
           </dependency>
         </dependencies>
-=======
-        <configuration>
-          <projectsDirectory>src/it</projectsDirectory>
-          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <preBuildHookScript>setup.bsh</preBuildHookScript>
-          <postBuildHookScript>verify.bsh</postBuildHookScript>
-        </configuration>
->>>>>>> jruby-1_7
       </plugin>
     </plugins>
   </build>
@@ -267,7 +178,6 @@
             </executions>
           </plugin>
         </plugins>
-<<<<<<< HEAD
       </build>
     </profile>
     <profile>
@@ -286,8 +196,6 @@
             </configuration>
           </plugin>
         </plugins>
-=======
->>>>>>> jruby-1_7
       </build>
     </profile>
   </profiles>

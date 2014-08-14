@@ -12,8 +12,12 @@
   <properties>
     <jruby.basedir>${basedir}/../../</jruby.basedir>
     <main.basedir>${project.parent.parent.basedir}</main.basedir>
+<<<<<<< HEAD
     <tesla.dump.pom>pom.xml</tesla.dump.pom>
     <tesla.version>0.1.1</tesla.version>
+=======
+    <tesla.dump.pom>pom-generated.xml</tesla.dump.pom>
+>>>>>>> jruby-1_7
   </properties>
   <dependencies>
     <dependency>
@@ -61,7 +65,15 @@
         </executions>
       </plugin>
       <plugin>
+<<<<<<< HEAD
         <artifactId>maven-invoker-plugin</artifactId>
+=======
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+>>>>>>> jruby-1_7
         <executions>
           <execution>
             <id>integration-test</id>
@@ -70,6 +82,7 @@
               <goal>run</goal>
             </goals>
             <configuration>
+<<<<<<< HEAD
               <settingsFile>${basedir}/src/it/settings.xml</settingsFile>
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
             </configuration>
@@ -89,6 +102,17 @@
         <groupId>io.tesla.polyglot</groupId>
         <artifactId>tesla-polyglot-maven-plugin</artifactId>
         <version>${tesla.version}</version>
+=======
+              <archive>
+                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-invoker-plugin</artifactId>
+>>>>>>> jruby-1_7
         <executions>
           <execution>
             <id>setup other osgi frameworks</id>
@@ -102,6 +126,7 @@
             </configuration>
           </execution>
         </executions>
+<<<<<<< HEAD
         <dependencies>
           <dependency>
             <groupId>io.tesla.polyglot</groupId>
@@ -109,6 +134,14 @@
             <version>${tesla.version}</version>
           </dependency>
         </dependencies>
+=======
+        <configuration>
+          <projectsDirectory>src/it</projectsDirectory>
+          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+          <preBuildHookScript>setup.bsh</preBuildHookScript>
+          <postBuildHookScript>verify.bsh</postBuildHookScript>
+        </configuration>
+>>>>>>> jruby-1_7
       </plugin>
     </plugins>
   </build>

@@ -1,14 +1,20 @@
+require 'rexml/document'
+require 'rexml/xpath'
+
+doc = REXML::Document.new File.new(File.join(File.dirname(__FILE__),'..', '..', 'pom.xml'))
+version = REXML::XPath.first(doc, "//project/version").text
+
 project 'JRuby Complete' do
 
   model_version '4.0.0'
-  id 'org.jruby:jruby-complete:1.7.14.dev-SNAPSHOT'
-  inherit 'org.jruby:jruby-artifacts:1.7.14.dev-SNAPSHOT'
+  id "org.jruby:jruby-complete:#{version}"
+  inherit "org.jruby:jruby-artifacts:#{version}"
   packaging 'bundle'
 
   plugin_repository( :id => 'rubygems-releases',
                      :url => 'http://rubygems-proxy.torquebox.org/releases' )
 
-  properties( 'tesla.dump.pom' => 'pom.xml',
+  properties( 'tesla.dump.pom' => 'pom-generated.xml',
               'jruby.basedir' => '${basedir}/../../',
               'main.basedir' => '${project.parent.parent.basedir}',
               'jruby.complete.home' => '${project.build.outputDirectory}/META-INF/jruby.home' )

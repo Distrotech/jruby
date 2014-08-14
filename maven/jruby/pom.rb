@@ -1,12 +1,17 @@
-require 'fileutils'
+require 'rexml/document'
+require 'rexml/xpath'
+
+doc = REXML::Document.new File.new(File.join(File.dirname(__FILE__),'..', '..', 'pom.xml'))
+version = REXML::XPath.first(doc, "//project/version").text
+
 project 'JRuby Main Maven Artifact' do
 
   model_version '4.0.0'
-  id 'org.jruby:jruby:1.7.14.dev-SNAPSHOT'
-  inherit 'org.jruby:jruby-artifacts:1.7.14.dev-SNAPSHOT'
+  id "org.jruby:jruby:#{version}"
+  inherit "org.jruby:jruby-artifacts:#{version}"
   packaging 'jar'
 
-  properties( 'tesla.dump.pom' => 'pom.xml',
+  properties( 'tesla.dump.pom' => 'pom-generated.xml',
               'jruby.basedir' => '${basedir}/../../',
               'main.basedir' => '${project.parent.parent.basedir}' )
 

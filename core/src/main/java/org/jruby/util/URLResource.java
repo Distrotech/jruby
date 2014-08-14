@@ -32,6 +32,7 @@ public class URLResource implements FileResource {
 
     private final JarFileStat fileStat;
 
+    // TODO open stream on demand
     URLResource(String uri, InputStream is, String[] files) {
         this.uri = uri;
         this.list = files;
@@ -120,7 +121,7 @@ public class URLResource implements FileResource {
     }
 
     @Override
-    public InputStream getInputStream()
+    public InputStream openInputStream()
     {
         return is;
     }
@@ -129,7 +130,7 @@ public class URLResource implements FileResource {
     public ChannelDescriptor openDescriptor(ModeFlags flags, POSIX posix, int perm)
             throws ResourceException
     {
-        return new ChannelDescriptor(getInputStream(), flags);
+        return new ChannelDescriptor(openInputStream(), flags);
     }
 
     public static FileResource createClassloaderURI(String pathname) {
@@ -266,4 +267,5 @@ public class URLResource implements FileResource {
             throw new RuntimeException("BUG in " + URLResource.class);
         }
     }
+    
 }
