@@ -14,9 +14,8 @@
     </dependency>
     <dependency>
       <groupId>org.jruby</groupId>
-      <artifactId>jruby</artifactId>
-      <version>1.7.14.dev-SNAPSHOT</version>
-      <type>pom</type>
+      <artifactId>jruby-complete</artifactId>
+      <version>@project.version@</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

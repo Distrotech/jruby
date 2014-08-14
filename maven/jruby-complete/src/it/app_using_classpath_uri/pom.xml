@@ -3,10 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>no_group_id_given</groupId>
-  <artifactId>classpath_failure</artifactId>
+  <artifactId>app_using_classpath_uri</artifactId>
   <version>0.0.0</version>
   <packaging>pom</packaging>
-  <name>classpath_failure</name>
+  <name>app_using_classpath_uri</name>
   <modules>
     <module>bundle</module>
     <module>regular_app</module>
