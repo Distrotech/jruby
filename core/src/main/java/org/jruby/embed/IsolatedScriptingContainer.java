@@ -107,15 +107,16 @@ public class IsolatedScriptingContainer extends ScriptingContainer {
     }
 
     public void addLoadPath( ClassLoader cl, String ref ) {
-        if ( isContextClassLoader ) {
-            throw new RuntimeException( "not add load path on context classloader" );
-        }
         URL url = cl.getResource( ref );
+        if ( url == null && ref.startsWith( "/" ) ) {
+            url = cl.getResource( ref.substring( 1 ) );
+        }
         if ( url == null ) {
             throw new RuntimeException( "reference " + ref + " not found on classloader " + cl );
         }
 
-        runScriptlet( "$LOAD_PATH << 'uri:" + url.toString().replaceFirst( ref + "$", "" ) + "'" );
+        String uri = "uri:" + url.toString().replaceFirst( ref + "$", "" );
+        runScriptlet( "$LOAD_PATH << '" + uri + "' unless $LOAD_PATH.member?( '" + uri + "' )" );
     }
 
     public void addGemPath( ClassLoader cl ) {
@@ -123,14 +124,16 @@ public class IsolatedScriptingContainer extends ScriptingContainer {
     }
 
     public void addGemPath( ClassLoader cl, String ref ) {
-        if ( isContextClassLoader ) {
-            throw new RuntimeException( "not add load path on context classloader" );
-        }
         URL url = cl.getResource( ref );
+        if ( url == null && ref.startsWith( "/" ) ) {
+            url = cl.getResource( ref.substring( 1 ) );
+        }
         if ( url == null ) {
             throw new RuntimeException( "reference " + ref + " not found on classloader " + cl );
         }
-        runScriptlet( "Gem::Specification.add_dir 'uri:" + url.toString().replaceFirst( ref + "$", "" ) + "'" );
+
+        String uri = "uri:" + url.toString().replaceFirst( ref + "$", "" );
+        runScriptlet( "Gem::Specification.add_dir '" + uri + "' unless Gem::Specification.dirs.member?( '" + uri + "' )" );
     }
 
 }

@@ -11,7 +11,8 @@ public class SimpleTest {
     @Test
     public void test() throws Exception {
         IsolatedScriptingContainer container = new IsolatedScriptingContainer();
-	//container.addLoadPath( Bundle.class.getClassLoader() );
+	// this is not needed outside of OSGi
+	container.addLoadPath( Bundle.class.getClassLoader() );
 	String output = (String) container.runScriptlet("require 'hello';Hello.say");
 
         assertEquals( output, "world" );
