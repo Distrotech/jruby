@@ -133,6 +133,11 @@ class LibrarySearcher {
           return findFileResource(baseName, suffix);
         }
 
+        // formally obey the fact that the current directory is NOT implicitly on the LOAD_PATH
+        if (! new File(baseName).exists()) {
+            FoundLibrary library = findFileResourceWithLoadPath(baseName, suffix, URLResource.URI_CLASSLOADER);
+            if (library != null) return library;
+        }
         try {
             for (IRubyObject loadPathEntry : loadService.loadPath.toJavaArray()) {
                 FoundLibrary library = findFileResourceWithLoadPath(baseName, suffix, getPath(loadPathEntry));
