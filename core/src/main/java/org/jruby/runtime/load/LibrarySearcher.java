@@ -15,7 +15,6 @@ import org.jruby.RubyString;
 import org.jruby.ast.executable.Script;
 import org.jruby.runtime.builtin.IRubyObject;
 import org.jruby.runtime.load.LoadService.SuffixType;
-import org.jruby.util.ClasspathResource;
 import org.jruby.util.FileResource;
 import org.jruby.util.JRubyFile;
 import org.jruby.util.URLResource;
@@ -133,8 +132,9 @@ class LibrarySearcher {
           return findFileResource(baseName, suffix);
         }
 
+        baseName = baseName.replace("classpath:", "");
         // formally obey the fact that the current directory is NOT implicitly on the LOAD_PATH
-        if (! new File(baseName).exists()) {
+        if (! new File(baseName + suffix).exists()) {
             FoundLibrary library = findFileResourceWithLoadPath(baseName, suffix, URLResource.URI_CLASSLOADER);
             if (library != null) return library;
         }
@@ -268,12 +268,7 @@ class LibrarySearcher {
         private void loadJar(Ruby runtime, boolean wrap) {
             try {
                 URL url;
-                if (location.startsWith(ClasspathResource.CLASSPATH)){
-                    // get URL directly from the classloader with its StreamHandler set
-                    // by the classloader itself
-                    url = ClasspathResource.getResourceURL(location);
-                }
-                else if (location.startsWith(URLResource.URI)){
+                if (location.startsWith(URLResource.URI)){
                     url = null;
                     runtime.getJRubyClassLoader().addURLNoIndex(URLResource.getResourceURL(runtime, location));
                 }
